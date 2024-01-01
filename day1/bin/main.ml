@@ -26,9 +26,6 @@ let rotate_z (a : float) (p : point) : point =
     x = (p.x *. cos(a)) -. (p.y *. sin(a)) ;
     y = (p.x *. sin(a)) +. (p.y *. cos(a)) ;
   }
-
-let translate_x (d : float) (p : point) : point = 
-  { p with x = p.x +. d }
   
 let point_z_cmp (a : point) (b : point) : int =
   if a.z == b.z then 0
@@ -36,32 +33,10 @@ let point_z_cmp (a : point) (b : point) : int =
 
 (* ----- *)
 
-let _generate_torus (ft : float) : point list =
-  let o = sin (ft /. 20.) in
-  let offset = if o < 0. then ((0. -. o) *. 20.0) else 0. in
-  let thickness_radius = 10. 
-  and dots_per_slice = 25
-  and torus_radius = 20.
-  and slices_per_torus = 70 in 
-  let nested = Array.init slices_per_torus (fun s -> 
-    let slice_angle = (2. *. (Float.of_int s) *. Float.pi /. (Float.of_int slices_per_torus)) in
-    Array.init dots_per_slice (fun i -> 
-      let fi = Float.of_int i in
-      let a = (2. *. fi *. Float.pi /. (Float.of_int dots_per_slice)) in
-      {
-        x = (thickness_radius +. offset) *. cos a ;
-        y = (thickness_radius +. offset) *. sin a ;
-        z = 0. ;
-      } |> translate_x (torus_radius +. offset) |> rotate_y (slice_angle +. sin (ft *. 0.05))
-    ) 
-  ) in
-  let lested = Array.to_list nested in
-  Array.to_list (Array.concat lested)
-
-let generate_sphere (_tf : float) : point list =
+let generate_sphere (ft : float) : point list =
   let slices = 18
   and lats = 8
-  and radius = 35.
+  and radius = 30.
   and offset = 0.
   and max_dots_per_lat = 60.
   and dots_per_slice = 31 in
@@ -92,7 +67,23 @@ let generate_sphere (_tf : float) : point list =
       }
     )
   ) in
-  let lested = Array.to_list (Array.append nested_slices nested_lats) in
+  let ring_width = 10
+  and inner_radius = 40
+  and ring_spacing = 2 in
+  let nested_rings = Array.init ring_width (fun ring ->
+    let r = Float.of_int(inner_radius + (ring * ring_spacing)) in
+    let dots_per_ring = 200 + (5 * ring * ring_spacing) in
+    Array.init dots_per_ring (fun d ->
+      let fd = Float.of_int d in
+      let a = (2. *. fd *. Float.pi /. (Float.of_int dots_per_ring)) +. ft in
+      {
+        x = (r +. offset) *. cos a ;
+        y = 0. ;
+        z = (r +. offset) *. sin a ;
+      }
+    )
+  ) in
+  let lested = Array.to_list (Array.append (Array.append nested_slices nested_lats) nested_rings) in
   Array.to_list (Array.concat lested)
 
 let render_to_primatives (ft : float) (screen : Tcc.screen) (points : point list) : Primatives.t list =
@@ -113,6 +104,7 @@ let tick (t : int) (screen : Tcc.screen) (prev : Framebuffer.t) : Framebuffer.t 
     ) row
   ) prev in
 
+  (* let ft = 100. in *)
   let ft = Float.of_int t in
 
   generate_sphere ft 
