@@ -15,4 +15,4 @@ val index_to_rgb: t -> int -> int option
 
 val to_list: t -> int list
 
-val from_list: int list -> t
+val of_list: int list -> t

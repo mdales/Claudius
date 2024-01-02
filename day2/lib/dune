@@ -1,3 +1,0 @@
-(library
- (name claudius)
- (libraries graphics unix))

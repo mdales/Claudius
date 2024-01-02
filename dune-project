@@ -1,22 +1,22 @@
 (lang dune 3.12)
 
-(name day2)
+(name claudius)
 
 (generate_opam_files true)
 
 (source
  (github username/reponame))
 
-(authors "Author Name")
+(authors "Michael Dales")
 
-(maintainers "Maintainer Name")
+(maintainers "Michael Dales")
 
 (license LICENSE)
 
 (documentation https://url/to/documentation)
 
 (package
- (name day2)
+ (name claudius)
  (synopsis "A short synopsis")
  (description "A longer description")
  (depends ocaml dune)
