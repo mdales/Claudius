@@ -1,7 +1,7 @@
 
 type t = int array array
 
-val init: int -> int -> (int -> int -> int) -> t
+val init: int * int -> (int -> int -> int) -> t
 
 val filled_circle: int -> int -> float -> int -> t -> unit
 

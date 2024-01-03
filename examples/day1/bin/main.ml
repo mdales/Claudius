@@ -86,18 +86,20 @@ let generate_sphere (ft : float) : point list =
   let lested = Array.to_list (Array.append (Array.append nested_slices nested_lats) nested_rings) in
   Array.to_list (Array.concat lested)
 
-let render_to_primatives (ft : float) (screen : Tcc.screen) (points : point list) : Primatives.t list =
+let render_to_primatives (ft : float) (s : Screen.t) (points : point list) : Primatives.t list =
+  let width, height = Screen.dimensions s
+  and palette = Screen.palette s in
   let m = 2000. +. cos(ft /. 30.) *. 600. in
   List.map (fun e ->
     Primatives.Pixel ({
-      x = ((screen.width / 2) + int_of_float(m *. e.x /. (e.z +. 400.))) ; 
-      y = ((screen.height / 2) + int_of_float(m *. e.y /. (e.z +. 400.))) ;
-    }, ((Palette.size screen.palette) - 1))
+      x = ((width / 2) + int_of_float(m *. e.x /. (e.z +. 400.))) ; 
+      y = ((height / 2) + int_of_float(m *. e.y /. (e.z +. 400.))) ;
+    }, ((Palette.size palette) - 1))
   ) points
 
 (* ----- *)
 
-let tick (t : int) (screen : Tcc.screen) (prev : Framebuffer.t) : Framebuffer.t =
+let tick (t : int) (s : Screen.t) (prev : Framebuffer.t) : Framebuffer.t =
   let buffer = Array.map (fun row -> 
     Array.map (fun pixel ->
       if pixel > 2 then (pixel - 2) else 0
@@ -112,7 +114,7 @@ let tick (t : int) (screen : Tcc.screen) (prev : Framebuffer.t) : Framebuffer.t 
     rotate_y (0.02 *. ft) p |> rotate_x (0.01 *. ft) |> rotate_z (0.005 *. ft)
   ) 
   |> List.sort point_z_cmp 
-  |> render_to_primatives ft screen 
+  |> render_to_primatives ft s 
   |> Framebuffer.render buffer;
 
   buffer
@@ -120,10 +122,5 @@ let tick (t : int) (screen : Tcc.screen) (prev : Framebuffer.t) : Framebuffer.t 
 (* ----- *)
 
 let () =
-  let screen : Tcc.screen = {
-    width = 640 ;
-    height = 480 ;
-    scale = 1 ;
-    palette = Palette.generate_mono_palette 16 ;
-  } in
-  Tcc.tcc_init screen "Genuary Day 1: Particals" None tick
+  let screen = Screen.create 640 480 1 (Palette.generate_mono_palette 16) in
+  Tcc.run screen "Genuary Day 1: Particals" None tick

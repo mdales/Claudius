@@ -1,7 +1,8 @@
 
 type t = int array array
 
-let init (width : int) (height : int) (f : int -> int -> int) : t =
+let init (dimensions : int * int) (f : int -> int -> int) : t =
+  let width, height = dimensions in
   Array.init height (fun y ->
     Array.init width (fun x -> 
         f x y
