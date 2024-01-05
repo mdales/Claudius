@@ -61,6 +61,27 @@ let draw_line (x0 : int) (y0 : int) (x1 : int) (y1 : int) (col : int) (buffer : 
     )
   in loop x0 y0 initial_error
 
+let draw_polygon (points : (int * int) list) (col : int) (buffer : t) = 
+  match points with 
+  | [] -> ()
+  | hd :: tl -> (
+    let rec loop start prev rest =
+      let x0, y0 = prev in
+      match rest with
+      | [] -> ()
+      | ihd :: [] -> (
+        let x1, y1 = ihd in
+        draw_line x0 y0 x1 y1 col buffer;
+        let xs, ys = start in
+        draw_line x1 y1 xs ys col buffer;
+      )
+      | ihd :: itl -> (
+        let x1, y1 = ihd in
+        draw_line x0 y0 x1 y1 col buffer;
+        loop start ihd itl
+      ) in loop hd hd tl
+  )
+
 let pixel_write (x : int) (y : int) (col : int) (buffer : t) =
   if (x >= 0) && (x < Array.length (buffer.(0))) && (y >= 0) && (y < Array.length buffer) then
     buffer.(y).(x) <- col
@@ -71,10 +92,11 @@ let pixel_read (x : int) (y : int) (buffer : t) : int option =
     else
       None
       
-let render (buffer : t) (draw : Primatives.t list) =
+let render (buffer : t) (draw : Primitives.t list) =
   List.iter (fun prim -> 
     match prim with
-    | Primatives.Circle (point, r, col) -> filled_circle point.x point.y r col buffer
-    | Primatives.Line (p1, p2, col) -> draw_line p1.x p1.y p2.x p2.y col buffer
-    | Primatives.Pixel (p, col) -> pixel_write p.x p.y col buffer
+    | Primitives.Circle (point, r, col) -> filled_circle point.x point.y r col buffer
+    | Primitives.Line (p1, p2, col) -> draw_line p1.x p1.y p2.x p2.y col buffer
+    | Primitives.Pixel (p, col) -> pixel_write p.x p.y col buffer
+    | Primitives.Polygon (plist, col) -> draw_polygon (List.map (fun (p : Primitives.point) -> (p.x, p.y)) plist) col buffer
   ) draw

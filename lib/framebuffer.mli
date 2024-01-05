@@ -11,4 +11,4 @@ val pixel_write: int -> int -> int -> t -> unit
 
 val pixel_read: int -> int -> t -> int option
 
-val render: t -> Primatives.t list -> unit
+val render: t -> Primitives.t list -> unit

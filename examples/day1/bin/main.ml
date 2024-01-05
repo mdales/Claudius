@@ -86,12 +86,12 @@ let generate_sphere (ft : float) : point list =
   let lested = Array.to_list (Array.append (Array.append nested_slices nested_lats) nested_rings) in
   Array.to_list (Array.concat lested)
 
-let render_to_primatives (ft : float) (s : Screen.t) (points : point list) : Primatives.t list =
+let render_to_primitives (ft : float) (s : Screen.t) (points : point list) : Primitives.t list =
   let width, height = Screen.dimensions s
   and palette = Screen.palette s in
   let m = 2000. +. cos(ft /. 30.) *. 600. in
   List.map (fun e ->
-    Primatives.Pixel ({
+    Primitives.Pixel ({
       x = ((width / 2) + int_of_float(m *. e.x /. (e.z +. 400.))) ; 
       y = ((height / 2) + int_of_float(m *. e.y /. (e.z +. 400.))) ;
     }, ((Palette.size palette) - 1))
@@ -114,7 +114,7 @@ let tick (t : int) (s : Screen.t) (prev : Framebuffer.t) : Framebuffer.t =
     rotate_y (0.02 *. ft) p |> rotate_x (0.01 *. ft) |> rotate_z (0.005 *. ft)
   ) 
   |> List.sort point_z_cmp 
-  |> render_to_primatives ft s 
+  |> render_to_primitives ft s 
   |> Framebuffer.render buffer;
 
   buffer
