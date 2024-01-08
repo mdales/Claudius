@@ -5,6 +5,10 @@ let rho = 28.
 let beta = 2.667
 let dt = 0.01
 
+let cur = ref (0., 1., 1.05)
+
+(* ----- *)
+
 let lorenz (prev: float * float * float) : (float * float * float) =
   let x, y, z = prev in
   (
@@ -13,12 +17,21 @@ let lorenz (prev: float * float * float) : (float * float * float) =
     z +. (((x *. y) -. (beta *. z)) *. dt)
   )
 
-let cur = ref (0., 1., 1.05)
+let project (point: float * float * float) (s : Screen.t) : (int * int * int) =
+  let x, _, z = point in
+  let width, height = Screen.dimensions s in
+  let dx = (Int.of_float (x *. 10.)) + (width / 2)
+  and dy = height - ((Int.of_float (z *. 7.5)) + (height / 6)) + 30 in
+  let palrange = ((Palette.size (Screen.palette s)) - 1) in
+  (dx, dy, palrange)
+
+(* ----- *)
 
 let boot s =
   Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0)
-
+  
 let tick _t s prev = 
+  (* Fade what came before *)
   let buffer = Array.map (fun row ->
     Array.map (fun pixel -> 
       match pixel with
@@ -26,17 +39,18 @@ let tick _t s prev =
       | _ -> (pixel - 1)
     ) row
   ) prev in
+
+  (* Work out next point*)
   let next = lorenz !cur in
-  let x, _y, z = next in
-  let width, height = Screen.dimensions s in
-  let dx = (Int.of_float (x *. 9.)) + (width / 2)
-  and dy = height - ((Int.of_float (z *. 7.)) + (height / 6)) in
-  let palrange = ((Palette.size (Screen.palette s)) - 1) in
-  (* let col = 1 + (Int.of_float (palrange *. ((30. +. y) /. 60.))) in *)
-  Framebuffer.pixel_write dx dy palrange buffer;
-  (* Framebuffer.filled_circle dx dy (((30. +. y) /. 60.) *. 2.) col p; *)
   cur := next;
+  
+  (* Draw the latest update *)
+  let x0, y0, _ = project !cur s in
+  let x1, y1, col = project next s in
+  Framebuffer.draw_line x0 y0 x1 y1 col buffer;
   buffer
+
+(* ----- *)
 
 let () =
   let pal = List.rev (Palette.to_list (Palette.generate_mono_palette 1024)) in
