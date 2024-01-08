@@ -35,18 +35,19 @@ let tick _t s prev =
   let buffer = Array.map (fun row ->
     Array.map (fun pixel -> 
       match pixel with
-      | 0 | 1 -> pixel
+      | 0 -> pixel
       | _ -> (pixel - 1)
     ) row
   ) prev in
 
-  (* Work out next point*)
+  (* Work out next point *)
   let next = lorenz !cur in
-  cur := next;
   
   (* Draw the latest update *)
   let x0, y0, _ = project !cur s in
   let x1, y1, col = project next s in
+
+  cur := next;
   Framebuffer.draw_line x0 y0 x1 y1 col buffer;
   buffer
 
