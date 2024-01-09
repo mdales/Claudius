@@ -1,6 +1,11 @@
 
 type t = int array array
 
+type shader_func = int -> int
+
+let to_array (buffer : t) : int array array =
+  buffer
+
 let init (dimensions : int * int) (f : int -> int -> int) : t =
   let width, height = dimensions in
   Array.init height (fun y ->
@@ -91,6 +96,12 @@ let pixel_read (x : int) (y : int) (buffer : t) : int option =
       Some buffer.(y).(x)
     else
       None
+
+let shader (f: shader_func) (buffer : t) : t =
+  Array.map (fun row ->
+    Array.map f row
+  ) buffer
+    
       
 let render (buffer : t) (draw : Primitives.t list) =
   List.iter (fun prim -> 

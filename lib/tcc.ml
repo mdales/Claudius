@@ -13,11 +13,12 @@ let expanded_row (s : Screen.t) (row : int array) : color array =
     ) (Array.to_list row))
 
 let buffer_to_image (s : Screen.t) (buffer : Framebuffer.t) : image =
-  let raw = Array.concat (List.map (fun (row : int array) : color array array ->
+  let raw = Framebuffer.to_array buffer in
+  let img = Array.concat (List.map (fun (row : int array) : color array array ->
     let colrow = expanded_row s row in
       Array.make (Screen.scale s) colrow
-  ) (Array.to_list buffer)) in
-    make_image raw
+  ) (Array.to_list raw)) in
+    make_image img
 
 
 (* ----- *)
@@ -36,7 +37,7 @@ let run (s : Screen.t) (title : string) (boot : boot_func option) (tick : tick_f
   | Some bfunc -> bfunc s
   in
 
-  let rec loop (t : int) (prev_buffer : int array array) = (
+  let rec loop (t : int) (prev_buffer : Framebuffer.t) = (
     let status = wait_next_event[ Poll; Key_pressed ] in
     match status.keypressed with
     | true -> raise Exit

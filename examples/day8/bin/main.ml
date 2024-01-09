@@ -32,12 +32,10 @@ let boot s =
   
 let tick _t s prev = 
   (* Fade what came before *)
-  let buffer = Array.map (fun row ->
-    Array.map (fun pixel -> 
-      match pixel with
-      | 0 -> pixel
-      | _ -> (pixel - 1)
-    ) row
+  let buffer = Framebuffer.shader (fun pixel -> 
+    match pixel with
+    | 0 -> pixel
+    | _ -> (pixel - 1)
   ) prev in
 
   (* Work out next point *)

@@ -100,10 +100,8 @@ let render_to_primitives (ft : float) (s : Screen.t) (points : point list) : Pri
 (* ----- *)
 
 let tick (t : int) (s : Screen.t) (prev : Framebuffer.t) : Framebuffer.t =
-  let buffer = Array.map (fun row -> 
-    Array.map (fun pixel ->
-      if pixel > 2 then (pixel - 2) else 0
-    ) row
+  let buffer = Framebuffer.shader (fun pixel ->
+    if pixel > 2 then (pixel - 2) else 0
   ) prev in
 
   (* let ft = 100. in *)
