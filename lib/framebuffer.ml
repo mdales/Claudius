@@ -1,39 +1,59 @@
 
-type t = int array array
+type t = {
+  data : (int32, Bigarray.int32_elt, Bigarray.c_layout) Bigarray.Array1.t ;
+  width : int ;
+  height : int ;
+}
 
 type shader_func = int -> int
 
-let to_array (buffer : t) : int array array =
-  buffer
+let to_bigarray (buffer : t) : (int32, Bigarray.int32_elt, Bigarray.c_layout) Bigarray.Array1.t =
+  buffer.data 
+
+let pixel_write (x : int) (y : int) (col : int) (buffer : t) =
+  let index = x + (y * buffer.width) in
+  if (index >= 0) && (index < (buffer.width * buffer.height)) then
+    buffer.data.{index} <- Int32.of_int col
+
+let pixel_read (x : int) (y : int) (buffer : t) : int option =
+  let index = x + (y * buffer.width) in
+  if (index >= 0) && (index < (buffer.width * buffer.height)) then
+    Some (Int32.to_int buffer.data.{index})
+  else
+    None
 
 let init (dimensions : int * int) (f : int -> int -> int) : t =
   let width, height = dimensions in
-  Array.init height (fun y ->
-    Array.init width (fun x -> 
-        f x y
-      )
-  ) 
+  let data = (Bigarray.Array1.create Bigarray.int32 Bigarray.c_layout (width * height)) in
+  for y = 0 to (height - 1) do
+    for x = 0 to (width - 1) do
+      data.{x + (y * width)} <- Int32.of_int (f x y);
+    done;
+  done;
+  {
+    data = data ;
+    width = width ;
+    height = height ;
+  }
 
 let filled_circle (x : int) (y : int) (r : float) (col : int) (buffer : t) =
   let fx = Float.of_int x and fy = Float.of_int y in
-  let my = Float.of_int ((Array.length buffer) - 1)
-  and mx = Float.of_int ((Array.length buffer.(0)) - 1) in
+  let my = Float.of_int buffer.height
+  and mx = Float.of_int buffer.width in
   let pminy = fy -. r
   and pmaxy = fy +. r in
   let miny = if (pminy < 0.) then 0. else pminy
   and maxy = if (pmaxy > my) then my else pmaxy in
   for yi = (Int.of_float miny) to (Int.of_float maxy) do
-    let row = buffer.(yi) in
     let a = acos ((Float.of_int (yi - y)) /. r) in
     let xw = (sin a) *. r in
     let pminx = fx -. xw
     and pmaxx = fx +. xw in
     let minx = if (pminx < 0.) then 0. else pminx
     and maxx = if (pmaxx > mx) then mx else pmaxx in
-    if (maxx > 0.0) && (minx < mx) then
-      for xi = (Int.of_float minx) to (Int.of_float maxx) do
-        row.(xi) <- col
-      done
+    for xi = (Int.of_float minx) to (Int.of_float maxx) do
+      pixel_write xi yi col buffer
+    done
   done
 
 let draw_line (x0 : int) (y0 : int) (x1 : int) (y1 : int) (col : int) (buffer : t) =
@@ -44,8 +64,7 @@ let draw_line (x0 : int) (y0 : int) (x1 : int) (y1 : int) (col : int) (buffer : 
   let initial_error = dx + dy in
     
   let rec loop (x : int) (y : int) (error : int) =
-    if (x >= 0) && (x < Array.length (buffer.(0))) && (y >= 0) && (y < Array.length buffer) then
-      buffer.(y).(x) <- col;
+    pixel_write x y col buffer;
     match (x == x1) && (y == y1) with
     | true -> ()
     | false -> (
@@ -87,20 +106,17 @@ let draw_polygon (points : (int * int) list) (col : int) (buffer : t) =
       ) in loop hd hd tl
   )
 
-let pixel_write (x : int) (y : int) (col : int) (buffer : t) =
-  if (x >= 0) && (x < Array.length (buffer.(0))) && (y >= 0) && (y < Array.length buffer) then
-    buffer.(y).(x) <- col
-
-let pixel_read (x : int) (y : int) (buffer : t) : int option =
-    if (x >= 0) && (x < Array.length (buffer.(0))) && (y >= 0) && (y < Array.length buffer) then
-      Some buffer.(y).(x)
-    else
-      None
-
 let shader (f: shader_func) (buffer : t) : t =
-  Array.map (fun row ->
-    Array.map f row
-  ) buffer
+  let newdata = (Bigarray.Array1.create Bigarray.int32 Bigarray.c_layout (buffer.width * buffer.height)) in
+  for y = 0 to (buffer.height - 1) do
+    for x = 0 to (buffer.width - 1) do
+      let index = x + (y * buffer.width) in
+      let old = Int32.to_int buffer.data.{index} in
+      newdata.{x + (y * buffer.width)} <- Int32.of_int (f old);
+    done;
+  done; {
+    buffer with data = newdata;
+  }
     
       
 let render (buffer : t) (draw : Primitives.t list) =

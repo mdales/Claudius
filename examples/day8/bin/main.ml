@@ -28,7 +28,7 @@ let project (point: float * float * float) (s : Screen.t) : (int * int * int) =
 (* ----- *)
 
 let boot s =
-  Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0)
+  Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0) 
   
 let tick _t s prev = 
   (* Fade what came before *)

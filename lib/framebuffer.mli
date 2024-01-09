@@ -17,4 +17,4 @@ val shader: shader_func -> t -> t
 
 val render: t -> Primitives.t list -> unit
 
-val to_array: t -> int array array
+val to_bigarray: t -> (int32, Bigarray.int32_elt, Bigarray.c_layout) Bigarray.Array1.t
