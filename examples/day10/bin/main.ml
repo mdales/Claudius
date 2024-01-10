@@ -27,19 +27,22 @@ let drawpoly (x : int) (y : int) (r : int) (sides : int) (a : float) (col : int)
 (* ----- *)
 
 let boot s =
-  Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0) 
+  Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0)
   
-let tick t s _prev = 
+let tick t s prev =
   let w, h = Screen.dimensions s in
   (* Fade what came before *)
-  (* let buffer = Framebuffer.shader (fun pixel -> 
+  let buffer = Framebuffer.shader (fun pixel ->
     match pixel with
     | 0 -> pixel
+    | 16 -> 0
     | _ -> (pixel - 1)
-  ) prev in *)
-  let buffer = Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0)  in
+  ) prev in
+  (* let buffer = Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0)  in *)
 
-  let hex = drawpoly ((t / 1) mod w) (h/2) 60 (((t / 150) mod 10) + 3) ((Float.of_int t) /. -50.) (t mod 150) in
+  let sides = (((t / 300) mod 5) + 3) in
+  let col = (t mod 15) + (if sides == 6 then 16 else 0) in
+  let hex = drawpoly ((t / 5) mod w) (h/2) 60 sides ((Float.of_int t) /. -50.) col in
   Framebuffer.render buffer [hex];
 
   buffer
@@ -47,6 +50,7 @@ let tick t s _prev =
 (* ----- *)
 
 let () =
-  let pal = List.rev (Palette.to_list (Palette.generate_mono_palette 150)) in
-  let screen = Screen.create 640 480 1 (Palette.of_list pal) in
-  Tcc.run screen "Genuary Day 8: Chaotic" (Some boot) tick
+  let pal = List.rev (Palette.to_list (Palette.generate_mono_palette 16)) in
+  let redpal = List.map (fun x -> x lor 0xff0000) pal in
+  let screen = Screen.create 240 136 3 (Palette.of_list (List.concat [pal ; redpal])) in
+  Tcc.run screen "Genuary Day 10: Hexagons" (Some boot) tick
