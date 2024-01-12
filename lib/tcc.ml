@@ -36,7 +36,7 @@ let render_texture (r : Sdl.renderer) (texture : Sdl.texture) (s : Screen.t) (bi
 
 (* ----- *)
 
-let run (s : Screen.t) (title : string) (boot : boot_func option) (tick : tick_func)  =
+let run (title : string) (boot : boot_func option) (tick : tick_func) (s : Screen.t) =
   let width, height = Screen.dimensions s
   and scale = Screen.scale s in
 

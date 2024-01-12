@@ -30,6 +30,6 @@ let tick t s p =
   p
 
 let () =
-  let pal = 0x000000 :: (List.rev (Palette.to_list (Palette.generate_plasma_palette 31))) in
-  let screen = Screen.create 512 384 1 (Palette.of_list pal) in
-  Tcc.run screen "Genuary Day 6: Screen saver" (Some boot) tick
+  Palette.of_list (0x000000 :: (List.rev (Palette.to_list (Palette.generate_plasma_palette 31)))) |>
+  Screen.create 512 384 1 |>
+  Tcc.run "Genuary Day 6: Screen saver" (Some boot) tick

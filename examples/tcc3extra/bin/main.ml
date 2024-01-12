@@ -63,6 +63,6 @@ let tick t s _p =
 (* ----- *)
 
 let () =
-  let pal = generate_mono_palette 16 in
-  let screen = Screen.create 640 480 1 (Palette.of_list pal) in
-  Tcc.run screen "TCC Day 3 Extra" None tick
+  Palette.of_list (generate_mono_palette 16) |>
+  Screen.create 640 480 1 |>
+  Tcc.run "TCC Day 3 Extra" None tick

@@ -12,5 +12,5 @@ let tick t s _prev =
   )
 
 let () =
-  let screen = Screen.create 640 480 1 (Palette.generate_plasma_palette 1024) in
-  Tcc.run screen "Genuary Day 2: No Palette" None tick
+  Screen.create 640 480 1 (Palette.generate_plasma_palette 1024) |>
+  Tcc.run "Genuary Day 2: No Palette" None tick
