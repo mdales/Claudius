@@ -9,6 +9,12 @@ val filled_circle: int -> int -> float -> int -> t -> unit
 
 val draw_line: int -> int -> int -> int -> int -> t -> unit
 
+val draw_rect: int -> int -> int -> int -> int -> t -> unit
+
+val filled_rect: int -> int -> int -> int -> int -> t -> unit
+
+val draw_polygon: (int * int) list -> int -> t -> unit
+
 val pixel_write: int -> int -> int -> t -> unit
 
 val pixel_read: int -> int -> t -> int option

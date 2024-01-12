@@ -87,6 +87,14 @@ let draw_polygon (points : (int * int) list) (col : int) (buffer : t) =
       ) in loop hd hd tl
   )
 
+let draw_rect (x : int) (y : int) (width : int) (height : int) (col : int) (buffer : t) =
+  draw_polygon [ (x, y) ; (x + width, y) ; (x + width, y + height) ; (x , y + height)] col buffer
+
+let filled_rect (x : int) (y : int) (width : int) (height : int) (col : int) (buffer : t) =
+  for oy = 0 to height do
+    draw_line x (y + oy) (x + width) (y + oy) col buffer
+  done
+
 let pixel_write (x : int) (y : int) (col : int) (buffer : t) =
   if (x >= 0) && (x < Array.length (buffer.(0))) && (y >= 0) && (y < Array.length buffer) then
     buffer.(y).(x) <- col

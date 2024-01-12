@@ -1,0 +1,4 @@
+(executable
+ (public_name shapes)
+ (name main)
+ (libraries shapes claudius))
