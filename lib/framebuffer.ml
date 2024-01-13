@@ -109,13 +109,15 @@ let shader (f: shader_func) (buffer : t) : t =
   Array.map (fun row ->
     Array.map f row
   ) buffer
-    
-      
+
+
 let render (buffer : t) (draw : Primitives.t list) =
   List.iter (fun prim -> 
     match prim with
-    | Primitives.Circle (point, r, col) -> filled_circle point.x point.y r col buffer
+    | Primitives.FilledCircle (point, r, col) -> filled_circle point.x point.y r col buffer
     | Primitives.Line (p1, p2, col) -> draw_line p1.x p1.y p2.x p2.y col buffer
     | Primitives.Pixel (p, col) -> pixel_write p.x p.y col buffer
     | Primitives.Polygon (plist, col) -> draw_polygon (List.map (fun (p : Primitives.point) -> (p.x, p.y)) plist) col buffer
+    | Primitives.Rect (p1, p2, col) -> draw_rect p1.x p1.y (p2.x - p1.x) (p2.y - p1.y) col buffer
+    | Primitives.FilledRect (p1, p2, col) -> filled_rect p1.x p1.y (p2.x - p1.x) (p2.y - p1.y) col buffer
   ) draw
