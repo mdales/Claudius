@@ -3,6 +3,8 @@ type t = int array array
 
 type shader_func = int -> int
 
+type shaderi_func = int -> int -> t -> int
+
 let to_array (buffer : t) : int array array =
   buffer
 
@@ -110,7 +112,21 @@ let shader (f: shader_func) (buffer : t) : t =
     Array.map f row
   ) buffer
 
+let shaderi (f: shaderi_func) (buffer : t) : t = 
+  Array.mapi (fun y row ->
+    Array.mapi (fun x _p -> f x y buffer) row
+  ) buffer
 
+let shader_inplace (f: shader_func) (buffer : t) =
+  Array.iter (fun row ->
+    Array.map_inplace f row
+  ) buffer
+
+let shaderi_inplace (f: shaderi_func) (buffer : t) = 
+  Array.iteri (fun y row ->
+    Array.mapi_inplace (fun x _p -> f x y buffer) row
+  ) buffer
+  
 let render (buffer : t) (draw : Primitives.t list) =
   List.iter (fun prim -> 
     match prim with
