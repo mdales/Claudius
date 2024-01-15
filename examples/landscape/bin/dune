@@ -1,0 +1,4 @@
+(executable
+ (public_name landscape)
+ (name main)
+ (libraries landscape claudius))
