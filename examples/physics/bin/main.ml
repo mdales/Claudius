@@ -25,7 +25,7 @@ let spheres = init_spheres 42
 
 let calc_y fx fz ft = 
   let prey = ((sin ((sin (ft /. 2.)) +. fx /. 50.) *. 3.) +. (sin((fz /. 50.) -. ft)) *. 3.) in
-  if prey > 0. then prey *. 4. else prey
+  if prey > 0. then prey *. 3. else prey
 
 let reset_spheres (t : int) (spheres : item array array) =
   let ft = (Float.of_int t) *. 0.02 in
