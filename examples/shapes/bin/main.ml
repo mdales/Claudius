@@ -29,4 +29,4 @@ let tick t _s prev =
 let () = 
   Palette.generate_mono_palette 16 |>
   Screen.create 640 480 1 |>
-  Tcc.run "Shapes test" None tick
+  Base.run "Shapes test" None tick

@@ -1,6 +1,5 @@
 open Claudius
 
-let _vapour_palette = "000:7400b86930c35e60ce5390d94ea8de48bfe356cfe164dfdf72efdd80ffdb" 
 let vapour_palette = "000:7400b86930c35e60ce5390d94ea8de48bfe356cfe164dfdf72efdd80ffdb7400b86930c35e60ce5390d94ea8de48bfe3"
 
 let tick t s _p =
@@ -25,4 +24,4 @@ let tick t s _p =
 let () =
   Palette.load_tic80_palette vapour_palette |>
   Screen.create 640 480 1 |>
-  Tcc.run "TCC Day 5" None tick
+  Base.run "TCC Day 5" None tick

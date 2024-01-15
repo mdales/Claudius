@@ -32,4 +32,4 @@ let tick t s p =
 let () =
   Palette.of_list (0x000000 :: (List.rev (Palette.to_list (Palette.generate_plasma_palette 31)))) |>
   Screen.create 512 384 1 |>
-  Tcc.run "Genuary Day 6: Screen saver" (Some boot) tick
+  Base.run "Genuary Day 6: Screen saver" (Some boot) tick

@@ -53,4 +53,4 @@ let () =
   let pal = List.rev (Palette.to_list (Palette.generate_mono_palette 16)) in
   let redpal = List.map (fun x -> x lor 0xff0000) pal in
   Screen.create 240 136 3 (Palette.of_list (List.concat [pal ; redpal])) |>
-  Tcc.run "Genuary Day 10: Hexagons" (Some boot) tick
+  Base.run "Genuary Day 10: Hexagons" (Some boot) tick

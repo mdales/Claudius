@@ -65,4 +65,4 @@ let tick t s _p =
 let () =
   Palette.of_list (generate_mono_palette 16) |>
   Screen.create 640 480 1 |>
-  Tcc.run "TCC Day 3 Extra" None tick
+  Base.run "TCC Day 3 Extra" None tick

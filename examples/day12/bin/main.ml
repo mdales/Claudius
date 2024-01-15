@@ -17,5 +17,5 @@ let tick t s _p =
 let () = 
   Palette.generate_plasma_palette 16 |>
   Screen.create 480 640 1 |>
-  Tcc.run "Genuary 12/13: Lava Lamp/Wobbly Functions" None tick
+  Base.run "Genuary 12/13: Lava Lamp/Wobbly Functions" None tick
   

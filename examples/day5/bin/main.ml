@@ -40,4 +40,4 @@ let tick t s p =
 
 let () = 
   Screen.create 500 500 1 (Palette.load_tic80_palette havrekaka_palette) |>
-  Tcc.run "Genuary Day 5: Vera Molnár" None tick
+  Base.run "Genuary Day 5: Vera Molnár" None tick

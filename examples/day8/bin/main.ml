@@ -54,4 +54,4 @@ let tick _t s prev =
 let () =
   Palette.of_list (List.rev (Palette.to_list (Palette.generate_mono_palette 1024))) |>
   Screen.create 640 480 1 |>
-  Tcc.run "Genuary Day 8: Chaotic" (Some boot) tick
+  Base.run "Genuary Day 8: Chaotic" (Some boot) tick

@@ -121,4 +121,4 @@ let tick (t : int) (s : Screen.t) (prev : Framebuffer.t) : Framebuffer.t =
 
 let () =
   Screen.create 640 480 1 (Palette.generate_mono_palette 16) |>
-  Tcc.run "Genuary Day 1: Particals" None tick
+  Base.run "Genuary Day 1: Particals" None tick
