@@ -54,28 +54,23 @@ let update_spheres (spheres : item array array) =
 
 let tick (t : int) (screen : Screen.t) (_prev : Framebuffer.t) : Framebuffer.t =
   Random.init 42;
-
   if (t mod 1000) == 0 then (reset_spheres t spheres);
 
   let width, height = Screen.dimensions screen in
   let buffer = Framebuffer.init (width, height) (fun _x _y -> 0) in
 
-  for z = 0 to (grid_depth - 1) do
+  Array.iteri (fun z row ->
     let fz = (Float.of_int z) *. 8. in
-    for x = 0 to (grid_width - 1) do 
-      let y = spheres.(z).(x).snapshot.position in
-
-
+    Array.iteri (fun x item ->
+      let y = item.snapshot.position in
       let fx = ((Float.of_int (x - (grid_width / 2))) *. 3.) in
       let px = (width / 2) + Int.of_float (fx /. (fz *. 1.8 -. 1200.) *. 1200.) 
       and py = (Int.of_float ((y -. 40.) /. (fz *. 1.8 -. 1200.) *. 1200.)) + 100
       and col = ((Int.of_float y) mod 15) in
-      (* let dither = if (Float.rem y 1.) > (Random.float 1.) then 1 else 0 in *)
       let dot = (20. /. (78. -. (fz /. 8.))) in
-
-     Framebuffer.filled_circle px py dot (1 + (if col < 0 then col + 15 else col)) buffer
-    done
-  done;
+      Framebuffer.filled_circle px py dot (1 + (if col < 0 then col + 15 else col)) buffer
+    ) row
+  ) spheres;
   update_spheres spheres;
   buffer
 
