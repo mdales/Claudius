@@ -56,7 +56,8 @@ let tick (t : int) (screen : Screen.t) (_prev : Framebuffer.t) : Framebuffer.t =
   Random.init 42;
   if (t mod 1000) == 0 then (reset_spheres t spheres);
 
-  let width, height = Screen.dimensions screen in
+  let width, height = Screen.dimensions screen
+  and palsize = (Palette.size (Screen.palette screen)) - 1 in
   let buffer = Framebuffer.init (width, height) (fun _x _y -> 0) in
 
   Array.iteri (fun z row ->
@@ -66,9 +67,9 @@ let tick (t : int) (screen : Screen.t) (_prev : Framebuffer.t) : Framebuffer.t =
       let fx = ((Float.of_int (x - (grid_width / 2))) *. 3.) in
       let px = (width / 2) + Int.of_float (fx /. (fz *. 1.8 -. 1200.) *. 1200.) 
       and py = (Int.of_float ((y -. 40.) /. (fz *. 1.8 -. 1200.) *. 1200.)) + 100
-      and col = ((Int.of_float y) mod 15) in
+      and col = ((Int.of_float (y *. 4.)) mod palsize) in
       let dot = (20. /. (78. -. (fz /. 8.))) in
-      Framebuffer.filled_circle px py dot (1 + (if col < 0 then col + 15 else col)) buffer
+      Framebuffer.filled_circle px py dot (1 + (if col < 0 then col + palsize else col)) buffer
     ) row
   ) spheres;
   update_spheres spheres;
@@ -77,6 +78,6 @@ let tick (t : int) (screen : Screen.t) (_prev : Framebuffer.t) : Framebuffer.t =
 (* ----- *)
 
 let () =
-  Palette.of_list (0x666666 :: (Palette.to_list (Palette.generate_plasma_palette 15))) |>
+  Palette.of_list (0x666666 :: (Palette.to_list (Palette.generate_plasma_palette 255))) |>
   Screen.create 640 480 1 |>
   Base.run "Genuary Day 15: Use a Physics Library" None tick
