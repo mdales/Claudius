@@ -34,18 +34,34 @@ let generate_star (x : int) (y : int) (r1 : int) (r2 : int) (sides : int) (a : f
   let mixed = List.concat (List.map2 (fun a b -> [b ; a]) s1 s2) in
   Primitives.Polygon (mixed, col)
 
-let tick t _s p =
-  Framebuffer.shader_inplace (fun _ -> 0) p;
-  let stars = List.init 4 (fun i -> 
-    List.init 4 (fun j -> 
-      generate_star ((i * 131 * 2) + ((t / 10) mod 262) - 262) ((j * 131 * 2) + ((t / 10) mod 262) - 262) 100 131 8 ((2. *. Float.pi) /. 16.) 15
+let tick t s fb =
+  let width, height = Screen.dimensions s in
+  let ft = Float.of_int t in
+  let col = (Palette.size (Screen.palette s)) - 1 in
+  let fcol = Float.of_int (col + 1) in
+  let inner_radius = 100
+  and outer_radius = 131 in
+  Framebuffer.shader_inplace (fun p -> 
+  match p with
+  | _ -> 0
+  ) fb;
+  let stars = List.init 3 (fun i -> 
+    List.init 3 (fun j -> 
+      generate_star 
+        ((i * outer_radius * 2) + ((width / 2) - (outer_radius * 2)))
+        ((j * outer_radius * 2) + ((height / 2) - (outer_radius * 2)))
+        inner_radius 
+        outer_radius 
+        8 
+        (((0. *. Float.pi) /. 16.) +. ((Float.pi *. (1. /. 8.) *. (cos (ft /. 300.)))))
+        ((Int.of_float ((fcol *. 0.25) *. (cos (ft /. 150.)))) + ((col * 3) / 4))
     )
   ) in
-  Framebuffer.render p (List.concat stars);
-  p
+  Framebuffer.render fb (List.concat stars);
+  fb
 
 
 let () = 
-  Palette.of_list (List.rev (Palette.to_list (Palette.generate_mono_palette 16))) |>
+  Palette.of_list (List.rev (Palette.to_list (Palette.generate_mono_palette 128))) |>
   Screen.create 640 480 1 |>
   Base.run "Genuary Day 17: Islamic Patterns" None tick
