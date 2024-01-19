@@ -1,0 +1,4 @@
+(executable
+ (public_name universe)
+ (name main)
+ (libraries universe claudius))
