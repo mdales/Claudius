@@ -16,6 +16,37 @@ let init (dimensions : int * int) (f : int -> int -> int) : t =
       )
   ) 
 
+let pixel_write (x : int) (y : int) (col : int) (buffer : t) =
+  if (x >= 0) && (x < Array.length (buffer.(0))) && (y >= 0) && (y < Array.length buffer) then
+    buffer.(y).(x) <- col
+
+let pixel_read (x : int) (y : int) (buffer : t) : int option =
+  if (x >= 0) && (x < Array.length (buffer.(0))) && (y >= 0) && (y < Array.length buffer) then
+    Some buffer.(y).(x)
+  else
+    None
+
+let draw_circle (x : int) (y : int) (r : float) (col : int) (buffer : t) =
+  let fx = Float.of_int x
+  and fy = Float.of_int y in
+
+  for yo = 0 to (Int.of_float (r *. sin (Float.pi *. 0.25))) do 
+    let yi = y + yo in
+    let a = acos ((Float.of_int (yi - y)) /. r) in
+    let xw = (sin a) *. r in
+
+    pixel_write (Int.of_float (fx -. xw)) (y + yo) col buffer;
+    pixel_write (Int.of_float (fx +. xw)) (y + yo) col buffer;
+    pixel_write (Int.of_float (fx -. xw)) (y - yo) col buffer;
+    pixel_write (Int.of_float (fx +. xw)) (y - yo) col buffer;
+
+    pixel_write (x + yo) (Int.of_float (fy -. xw)) col buffer;
+    pixel_write (x - yo) (Int.of_float (fy -. xw)) col buffer;
+    pixel_write (x + yo) (Int.of_float (fy +. xw)) col buffer;
+    pixel_write (x - yo) (Int.of_float (fy +. xw)) col buffer;
+
+  done
+
 let filled_circle (x : int) (y : int) (r : float) (col : int) (buffer : t) =
   let fx = Float.of_int x and fy = Float.of_int y in
   let my = Float.of_int ((Array.length buffer) - 1)
@@ -96,16 +127,6 @@ let filled_rect (x : int) (y : int) (width : int) (height : int) (col : int) (bu
   for oy = 0 to height do
     draw_line x (y + oy) (x + width) (y + oy) col buffer
   done
-
-let pixel_write (x : int) (y : int) (col : int) (buffer : t) =
-  if (x >= 0) && (x < Array.length (buffer.(0))) && (y >= 0) && (y < Array.length buffer) then
-    buffer.(y).(x) <- col
-
-let pixel_read (x : int) (y : int) (buffer : t) : int option =
-    if (x >= 0) && (x < Array.length (buffer.(0))) && (y >= 0) && (y < Array.length buffer) then
-      Some buffer.(y).(x)
-    else
-      None
 
 let shader (f: shader_func) (buffer : t) : t =
   Array.map (fun row ->
