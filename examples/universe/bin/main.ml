@@ -48,5 +48,5 @@ let tick (t : int) (screen : Screen.t) (prev : Framebuffer.t) : Framebuffer.t =
 
 let () = 
   Palette.load_tic80_palette vapour_palette |>
-  Screen.create 240 136 3 |>
+  Screen.create 640 480 1 |>
   Base.run "TCC Day 8 Extra" (Some boot) tick
