@@ -1,4 +1,7 @@
 
+(** Claudius works with colour palettes, as per computers of old. This module
+lets you load and manipulate palettes. *)
+
 type t
 
 exception String_not_multiple_of_chunk_size

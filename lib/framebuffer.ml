@@ -149,8 +149,9 @@ let shaderi_inplace (f: shaderi_func) (buffer : t) =
   ) buffer
   
 let render (buffer : t) (draw : Primitives.t list) =
-  List.iter (fun prim -> 
+  List.iter (fun prim ->
     match prim with
+    | Primitives.Circle (point, r, col) -> draw_circle point.x point. y r col buffer
     | Primitives.FilledCircle (point, r, col) -> filled_circle point.x point.y r col buffer
     | Primitives.Line (p1, p2, col) -> draw_line p1.x p1.y p2.x p2.y col buffer
     | Primitives.Pixel (p, col) -> pixel_write p.x p.y col buffer

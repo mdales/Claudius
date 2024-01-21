@@ -3,7 +3,8 @@ type point = {
     y : int ;
 }
 
-type t = 
+type t =
+| Circle of point * float * int
 | FilledCircle of point * float * int
 | Line of point * point * int
 | Pixel of point * int

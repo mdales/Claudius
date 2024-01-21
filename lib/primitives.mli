@@ -1,9 +1,12 @@
+(** Primatives are a way to build up a list of rendering operations for the framebuffer in a functional style and then render them at once. *)
+
 type point = {
     x : int ;
     y : int ;
 }
 
-type t = 
+type t =
+| Circle of point * float * int
 | FilledCircle of point * float * int
 | Line of point * point * int
 | Pixel of point * int
