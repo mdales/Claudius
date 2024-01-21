@@ -56,4 +56,4 @@ let tick t s fb =
 let () = 
   Palette.of_list [ 0xaaccff ; 0x0 ; 0xff0000 ; 0x0 ; 0x00ff00 ; 0x0 ; 0x0000ff ; 0x0 ] |>
   Screen.create 640 480 1 |>
-  Base.run "Flocking" None tick
+  Base.run "Genuary Day 19: Flocking" None tick
