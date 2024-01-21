@@ -5,7 +5,7 @@ let rho = 28.
 let beta = 2.667
 let dt = 0.002
 
-let cur = ref (List.init 1024 (fun i ->
+let cur = ref (List.init 10240 (fun i ->
     ((Random.float 30.) -. 15., (Random.float 120.) -. 60., (Random.float 310.) -. 150., i)
   ))
 
@@ -33,12 +33,7 @@ let project (point: float * float * float * int) (t : int) (s : Screen.t) : (int
 (* ----- *)
   
 let tick t s fb = 
-  (* Fade what came before *)
-  Framebuffer.shader_inplace (fun _pixel -> 
-    (* match pixel with
-    | 0 -> pixel
-    | _ -> (pixel - 1) *) 0
-  ) fb;
+  Framebuffer.shader_inplace (fun _pixel -> 0) fb;
 
   (* Work out next point *)
   let next = List.map lorenz !cur in
