@@ -128,7 +128,7 @@ let filled_rect (x : int) (y : int) (width : int) (height : int) (col : int) (bu
     draw_line x (y + oy) (x + width) (y + oy) col buffer
   done
 
-let draw_glyph (x : int) (y : int) (f : Font.t) (c : char) (col : int) (buffer : t) : int =
+let draw_char (x : int) (y : int) (f : Font.t) (c : char) (col : int) (buffer : t) : int =
   match Font.glyph_of_char f (Uchar.of_char c) with
   | None -> 0
   | Some glyph -> (
@@ -158,9 +158,9 @@ let draw_string (x : int) (y : int) (f : Font.t) (s : string) (col : int) (buffe
   let sl = List.init (String.length s) (String.get s) in
   let rec loop offset remaining = 
     match remaining with
-    | [] -> ()
+    | [] -> offset
     | c :: remaining -> (
-      let width = draw_glyph (x + offset) y f c col buffer in
+      let width = draw_char (x + offset) y f c col buffer in
       loop (offset + width) remaining
     )
   in loop 0 sl

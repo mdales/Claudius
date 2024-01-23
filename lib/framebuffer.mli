@@ -45,7 +45,9 @@ val filled_rect: int -> int -> int -> int -> int -> t -> unit
 
 val draw_polygon: (int * int) list -> int -> t -> unit
 
-val draw_string: int -> int -> Font.t -> string -> int -> t -> unit
+val draw_char: int -> int -> Font.t -> char -> int -> t -> int
+
+val draw_string: int -> int -> Font.t -> string -> int -> t -> int
 
 (** {1 Framebuffer wide operations} *)
 
