@@ -14,7 +14,7 @@ val load_tic80_palette: string -> t
 
 val size: t -> int
 
-val index_to_rgb: t -> int -> int option
+val index_to_rgb: t -> int -> int32 option
 
 val to_list: t -> int list
 

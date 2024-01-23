@@ -22,7 +22,7 @@ let framebuffer_to_bigarray (s : Screen.t) (buffer : Framebuffer.t) (bitmap : bi
   Array.iteri (fun y row ->
     Array.iteri (fun x pixel ->
       match (Palette.index_to_rgb palette pixel) with
-      | Some col -> bitmap.{x + (y * (Array.length row))} <- Int32.of_int col
+      | Some col -> bitmap.{x + (y * (Array.length row))} <- col
       | None -> ()
     ) row
   ) (Framebuffer.to_array buffer)
@@ -73,6 +73,28 @@ let run (title : string) (boot : boot_func option) (tick : tick_func) (s : Scree
           )
           | false -> loop (t + 1) updated_buffer
       ) in loop 0 initial_buffer;
+
+      (* let t = ref 0 in
+      let fb = ref initial_buffer in
+      let exit = ref false in
+      while !exit != true do
+        let updated_buffer = tick !t s !fb in
+        framebuffer_to_bigarray s updated_buffer bitmap;
+        t := !t + 1;
+        fb := updated_buffer;
+
+        match render_texture r texture s bitmap with 
+        | Error (`Msg e) -> Sdl.log "Boot error: %s" e
+        | Ok () ->
+          match Sdl.poll_event (Some e) with
+          | true -> (
+            match Sdl.Event.(enum (get e typ)) with
+            | `Quit -> exit := true
+            | _ -> ()
+            )
+          | false -> ();
+
+      done; *)
 
       Sdl.destroy_texture texture;
       Sdl.destroy_renderer r;

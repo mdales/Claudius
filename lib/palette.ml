@@ -1,22 +1,22 @@
-type t = int array
+type t = int32 array
 
 exception String_not_multiple_of_chunk_size
 
 let generate_mono_palette (size : int) : t = 
-  Array.init size (fun (index : int): int ->
+  Array.init size (fun (index : int): int32 ->
     let fi = float_of_int index and fsize = float_of_int size in
     let ch = ((fi /. fsize) *. 255.0) in
-    ((int_of_float ch) * 65536) + ((int_of_float ch) * 256) + (int_of_float ch)
+    Int32.of_int (((int_of_float ch) * 65536) + ((int_of_float ch) * 256) + (int_of_float ch))
   )
 
 let generate_plasma_palette (size : int) : t = 
-  Array.init size (fun (index : int): int ->
+  Array.init size (fun (index : int): int32 ->
     let fi = float_of_int index and fsize = float_of_int size in
     let fred = (cos (fi *. ((2.0 *. Float.pi) /. fsize)) *. 127.0) +. 128.0 in
     let fgreen = (cos ((fi +. (fsize /. 3.0)) *. ((2.0 *. Float.pi) /. fsize)) *. 127.0) +. 128.0 in
     let fblue = (cos ((fi +. ((fsize *. 2.0) /. 3.0)) *. ((2.0 *. Float.pi) /. fsize)) *. 127.0) +. 128.0 in
 
-    ((int_of_float fred) * 65536) + ((int_of_float fgreen) * 256) + (int_of_float fblue)
+    Int32.of_int (((int_of_float fred) * 65536) + ((int_of_float fgreen) * 256) + (int_of_float fblue))
   )
   
 let string_to_chunks (x : string) (size : int) : string list =
@@ -32,7 +32,7 @@ let string_to_chunks (x : string) (size : int) : string list =
   List.rev (loop [] x)
 
 let chunks_to_colors (raw : string list) : t =
-  Array.map (fun (colorstr : string): int -> int_of_string ("0x" ^ colorstr)) (Array.of_list raw)
+  Array.map (fun (colorstr : string): int32 -> Int32.of_int (int_of_string ("0x" ^ colorstr))) (Array.of_list raw)
 
 let load_tic80_palette (raw : string) : t =
   let parts = String.split_on_char ':' raw in
@@ -42,15 +42,16 @@ let load_tic80_palette (raw : string) : t =
 let size (palette : t) : int =
     Array.length palette
 
-let index_to_rgb (palette : t) (index : int) : int option =
-    if (index < 0) || (index >= (size palette)) then
-      None
-    else
-      Some palette.(index)
+let index_to_rgb (palette : t) (index : int) : int32 option =
+  try
+    Some palette.(index)
+  with
+  | Invalid_argument(_) -> None
+
 
 let to_list (palette : t) : int list =
-    Array.to_list palette
+    List.map Int32.to_int (Array.to_list palette)
 
 let of_list (rgb_list : int list) : t = 
-    Array.of_list rgb_list
+    Array.of_list (List.map Int32.of_int rgb_list)
   
