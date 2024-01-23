@@ -128,6 +128,44 @@ let filled_rect (x : int) (y : int) (width : int) (height : int) (col : int) (bu
     draw_line x (y + oy) (x + width) (y + oy) col buffer
   done
 
+let draw_glyph (x : int) (y : int) (f : Font.t) (c : char) (col : int) (buffer : t) : int =
+  match Font.glyph_of_char f (Uchar.of_char c) with
+  | None -> 0
+  | Some glyph -> (
+    let gw, gh = Font.glyph_dimensions glyph in
+    let bmp = Font.glyph_bitmap glyph in
+    let bytes_per_line = (Bytes.length bmp) / gh in
+    for h = 0 to (gh - 1) do
+      for w = 0 to (bytes_per_line - 1) do
+        let bitcount = if (((w + 1) * 8) < gw) then 8 else ((gw - (w * 8)) mod 8) in
+        let b = int_of_char (Bytes.get bmp ((h * bytes_per_line) + w)) in
+        for bit = 0 to (bitcount - 1) do
+          let isbit = (b lsl bit) land 0x80 in
+          match isbit with
+          | 0 -> ()
+          | _ -> 
+          pixel_write 
+            (x + (w * 8) + bit)
+            (y + h) 
+            col
+            buffer
+        done
+      done
+    done; gw
+  )
+
+let draw_string (x : int) (y : int) (f : Font.t) (s : string) (col : int) (buffer : t) = 
+  let sl = List.init (String.length s) (String.get s) in
+  let rec loop offset remaining = 
+    match remaining with
+    | [] -> ()
+    | c :: remaining -> (
+      let width = draw_glyph (x + offset) y f c col buffer in
+      loop (offset + width) remaining
+    )
+  in loop 0 sl
+
+
 let shader (f: shader_func) (buffer : t) : t =
   Array.map (fun row ->
     Array.map f row

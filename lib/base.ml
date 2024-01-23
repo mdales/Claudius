@@ -55,6 +55,8 @@ let run (title : string) (boot : boot_func option) (tick : tick_func) (s : Scree
       | Some bfunc -> bfunc s
       in
 
+      let e = Sdl.Event.create () in
+      
       let rec loop (t : int) (prev_buffer : Framebuffer.t) = (
         let updated_buffer = tick t s prev_buffer in
 
@@ -63,7 +65,6 @@ let run (title : string) (boot : boot_func option) (tick : tick_func) (s : Scree
         match render_texture r texture s bitmap with 
         | Error (`Msg e) -> Sdl.log "Boot error: %s" e
         | Ok () ->
-          let e = Sdl.Event.create () in
           match Sdl.poll_event (Some e) with
           | true -> (
             match Sdl.Event.(enum (get e typ)) with

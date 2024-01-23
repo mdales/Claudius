@@ -45,6 +45,8 @@ val filled_rect: int -> int -> int -> int -> int -> t -> unit
 
 val draw_polygon: (int * int) list -> int -> t -> unit
 
+val draw_string: int -> int -> Font.t -> string -> int -> t -> unit
+
 (** {1 Framebuffer wide operations} *)
 
 type shader_func = int -> int
