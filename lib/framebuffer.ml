@@ -196,4 +196,6 @@ let render (buffer : t) (draw : Primitives.t list) =
     | Primitives.Polygon (plist, col) -> draw_polygon (List.map (fun (p : Primitives.point) -> (p.x, p.y)) plist) col buffer
     | Primitives.Rect (p1, p2, col) -> draw_rect p1.x p1.y (p2.x - p1.x) (p2.y - p1.y) col buffer
     | Primitives.FilledRect (p1, p2, col) -> filled_rect p1.x p1.y (p2.x - p1.x) (p2.y - p1.y) col buffer
+    | Primitives.Char (p, font, c, col) -> ignore (draw_char p.x p.y font c col buffer)
+    | Primitives.String (p, font, s, col) -> ignore (draw_string p.x p.y font s col buffer )
   ) draw
