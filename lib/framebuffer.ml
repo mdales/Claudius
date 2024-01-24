@@ -199,3 +199,18 @@ let render (buffer : t) (draw : Primitives.t list) =
     | Primitives.Char (p, font, c, col) -> ignore (draw_char p.x p.y font c col buffer)
     | Primitives.String (p, font, s, col) -> ignore (draw_string p.x p.y font s col buffer )
   ) draw
+
+let merge (origin : t) (delta : t) : t =
+  Array.map2 (fun o_row d_row ->
+    Array.map2 (fun o_pixel d_pixel ->
+      o_pixel + d_pixel
+    ) o_row d_row
+  ) origin delta
+
+
+let merge_inplace (origin : t) (delta : t) =
+  Array.iter2 (fun o_row d_row ->
+    Array.iteri (fun index d_pixel ->
+      o_row.(index) <- o_row.(index) + d_pixel
+    ) d_row
+  ) origin delta
