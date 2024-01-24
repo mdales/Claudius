@@ -1,0 +1,4 @@
+(executable
+ (public_name day18)
+ (name main)
+ (libraries day18 claudius))
