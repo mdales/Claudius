@@ -43,7 +43,7 @@ let tick_d t s fb =
           col - 1
     )
   ) fb;
-  Framebuffer.merge_inplace fb delta;
+  Framebuffer.merge_inplace (+) fb delta;
   fb
 
 let tick t s fb =

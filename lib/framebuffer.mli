@@ -73,6 +73,6 @@ val to_array: t -> int array array
 (** [to_array framebuffer] converts the framebuffer into a 2D array. The top level array is an array
     of rows, and each row is an array of palette entry colours. *)
 
-val merge: t -> t -> t
+val merge: (int -> int -> int) -> t -> t -> t
 
-val merge_inplace: t -> t -> unit
+val merge_inplace: (int -> int -> int) -> t -> t -> unit
