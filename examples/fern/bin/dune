@@ -1,4 +1,4 @@
 (executable
  (public_name fern)
  (name main)
- (libraries fern claudius))
+ (libraries fern claudius unix))
