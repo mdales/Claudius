@@ -184,11 +184,15 @@ let filled_triangle (x0 : int) (y0 : int) (x1 : int) (y1 : int) (x2 : int) (y2 :
   ) in
   assert ((List.length long_edge) == (List.length other_edge));
   
-
   let spans = List.map2 (fun a b -> (a, b)) long_edge other_edge in
   List.iteri (fun i s ->
-    let l, r = s in
-    draw_line l (y0 + i) r (y0 + i) col buffer
+    let row = buffer.(y0 + i) in
+    let stride = Array.length row in
+    let p, q = s in
+    let p0, p1 = if (p <= q) then p, q else q, p in
+    let x0 = if (p0 < 0) then 0 else (if (p0 >= stride) then (stride - 1) else p0)
+    and x1 = if (p1 < 0) then 0 else (if (p1 >= stride) then (stride - 1) else p1) in
+    Array.fill row x0 ((x1 - x0) + 1) col
   ) spans
 
 (* ----- *)
@@ -264,6 +268,8 @@ let render (buffer : t) (draw : Primitives.t list) =
     | Primitives.Polygon (plist, col) -> draw_polygon (List.map (fun (p : Primitives.point) -> (p.x, p.y)) plist) col buffer
     | Primitives.Rect (p1, p2, col) -> draw_rect p1.x p1.y (p2.x - p1.x) (p2.y - p1.y) col buffer
     | Primitives.FilledRect (p1, p2, col) -> filled_rect p1.x p1.y (p2.x - p1.x) (p2.y - p1.y) col buffer
+    | Primitives.Triangle (p1, p2, p3, col) -> draw_triangle p1.x p1.y p2.x p2.y p3.x p3.y col buffer
+    | Primitives.FilledTriangle (p1, p2, p3, col) -> filled_triangle p1.x p1.y p2.x p2.y p3.x p3.y col buffer
     | Primitives.Char (p, font, c, col) -> ignore (draw_char p.x p.y font c col buffer)
     | Primitives.String (p, font, s, col) -> ignore (draw_string p.x p.y font s col buffer )
   ) draw

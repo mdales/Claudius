@@ -1,7 +1,7 @@
 open Claudius
 
 let prism_radius = 100.
-let rainbow = [0xE03A3C  ; 0xF6821F ; 0xFCB827 ; 0x62BB47 ; 0x009DDC ; 0x963D97]
+let rainbow = [0xE03A3C ; 0xF6821F ; 0xFCB827 ; 0x62BB47 ; 0x009DDC ; 0x963D97]
 
 let draw_light s fb = 
   let w, h = Screen.dimensions s in
@@ -32,7 +32,6 @@ let draw_flair s fb =
       fb
   done
 
-
 let draw_prism s fb =
   let w, h = Screen.dimensions s in
   let mx, my = (w / 2, ((2 * h) / 5)) in
@@ -56,7 +55,6 @@ let boot s =
   draw_prism s fb;
   draw_flair s fb;
   fb
-
 
 let tick _t _s fb = fb
 
