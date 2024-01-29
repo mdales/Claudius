@@ -1,6 +1,5 @@
 open Claudius
 
-
 let generate_poly (x : int) (y : int) (r : int) (sides : int) (a : float) (col : int) =
   let segment_angle = (2. *. Float.pi) /. (Float.of_int sides) in
   let fr = Float.of_int r in
@@ -13,9 +12,9 @@ let generate_poly (x : int) (y : int) (r : int) (sides : int) (a : float) (col :
     match i with
     | 0 -> next :: rest
     | _ -> next :: loop (i - 1) rest
-  ) in 
+  ) in
   let points = loop (sides - 1) [] in
-  let shifted = List.map (fun (p : Primitives.point) : Primitives.point -> 
+  let shifted = List.map (fun (p : Primitives.point) : Primitives.point ->
     {
       x = p.x + x ;
       y = p.y + y ;
@@ -34,6 +33,14 @@ let generate_star (x : int) (y : int) (r1 : int) (r2 : int) (sides : int) (a : f
   let mixed = List.concat (List.map2 (fun a b -> [b ; a]) s1 s2) in
   Primitives.Polygon (mixed, col)
 
+let generate_cross (x : int) (y : int) (_r1 : int) (_r2 : int) (sides : int) (a : float) (col : int) =
+  let s1 = generate_poly x y 132 sides a col |> poly_points in
+  let s2 = generate_poly x y 56 sides (a +. ((Float.pi *. 2.) /. ((Float.of_int sides) *. 2.))) col |> poly_points in
+  let s1s2 = List.concat (List.map2 (fun a b -> [b ; a]) s1 s2) in
+  let s3 = generate_poly x y 102 (sides * 2) (a +. ((Float.pi *. 2.) /. ((Float.of_int sides) *. 4.))) col |> poly_points in
+  let mixed = List.concat (List.map2 (fun a b -> [b ; a]) s1s2 s3) in
+  Primitives.Polygon (mixed, col)
+
 let tick t s fb =
   let width, height = Screen.dimensions s in
   let ft = Float.of_int t in
@@ -41,27 +48,39 @@ let tick t s fb =
   let fcol = Float.of_int (col + 1) in
   let inner_radius = 100
   and outer_radius = 131 in
-  Framebuffer.shader_inplace (fun p -> 
+  Framebuffer.shader_inplace (fun p ->
   match p with
   | _ -> 0
   ) fb;
-  let stars = List.init 3 (fun i -> 
-    List.init 3 (fun j -> 
-      generate_star 
+
+  (match (sin (ft /. 300.)) >= 0. with
+  | true -> List.concat (List.init 3 (fun i ->
+    List.init 3 (fun j ->
+      generate_star
         ((i * outer_radius * 2) + ((width / 2) - (outer_radius * 2)))
         ((j * outer_radius * 2) + ((height / 2) - (outer_radius * 2)))
-        inner_radius 
-        outer_radius 
-        8 
-        (((0. *. Float.pi) /. 16.) +. ((Float.pi *. (1. /. 8.) *. (cos (ft /. 300.)))))
+        inner_radius
+        outer_radius
+        8
+        ((Float.pi *. (1. /. 8.) *. (cos (ft /. 300.))))
         ((Int.of_float ((fcol *. 0.25) *. (cos (ft /. 150.)))) + ((col * 3) / 4))
     )
-  ) in
-  Framebuffer.render fb (List.concat stars);
+  ))
+  | false -> List.concat (List.init 4 (fun i ->
+      List.init 3 (fun j ->
+        generate_cross
+          ((i * outer_radius * 2) + ((width / 2) - (outer_radius * 2)) - outer_radius)
+          ((j * outer_radius * 2) + ((height / 2) - (outer_radius * 2)) + outer_radius)
+          outer_radius
+          inner_radius
+          4
+          (((Float.pi *. (1. /. 4.) *. (0.0 +. (cos (ft /. 300.))))) +. (Float.pi /. 4.))
+          ((Int.of_float ((fcol *. 0.25) *. (cos (ft /. 150.)))) + ((col * 3) / 4))
+      )
+  ))) |> Framebuffer.render fb;
   fb
 
-
-let () = 
+let () =
   Palette.of_list (List.rev (Palette.to_list (Palette.generate_mono_palette 128))) |>
   Screen.create 640 480 1 |>
   Base.run "Genuary Day 17: Islamic Patterns" None tick
