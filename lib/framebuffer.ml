@@ -161,6 +161,39 @@ let interpolate_line (x0 : int) (y0 : int) (x1 : int) (y1 : int) : int list =
     )
   in List.rev (loop x0 y0 initial_error [x0])
 
+type span =
+| None
+| Only of int
+| Pair of int * int
+
+let interpolate_line_2 (x0 : int) (y0 : int) (x1 : int) (y1 : int) : span list =
+  let dx = abs (x1 - x0)
+  and sx = if x0 < x1 then 1 else -1
+  and dy = (abs (y1 - y0)) * -1
+  and sy = if y0 < y1 then 1 else -1 in
+  let initial_error = dx + dy in
+    
+  let rec loop (x : int) (y : int) (error : int) (tail : span list) : span list =
+    match (x == x1) && (y == y1) with
+    | true -> tail
+    | false -> (
+      let e2 = 2 * error in
+      let nx = match e2 >= dy with
+      | false -> x
+      | true -> x + sx in
+      let ny = match e2 <= dx with
+      | false -> y
+      | true -> y + sy in
+      let nex = match (e2 >= dy) with
+      | false -> 0
+      | true -> dy in
+      let ney = match (e2 <= dx) with
+      | false -> 0
+      | true -> dx in
+      loop nx ny (error + nex + ney) (if ny == y then tail else nx :: tail)
+    )
+  in List.rev (loop x0 y0 initial_error [(Only x0)])
+
 let filled_triangle (x0 : int) (y0 : int) (x1 : int) (y1 : int) (x2 : int) (y2 : int) (col : int) (buffer : t) =
   let points = [(x0, y0) ; (x1, y1) ; (x2, y2)] in
   let sorted_points = List.sort (fun a b -> 
@@ -194,6 +227,82 @@ let filled_triangle (x0 : int) (y0 : int) (x1 : int) (y1 : int) (x2 : int) (y2 :
     and x1 = if (p1 < 0) then 0 else (if (p1 >= stride) then (stride - 1) else p1) in
     Array.fill row x0 ((x1 - x0) + 1) col
   ) spans
+
+let rot l =
+  match l with
+  | [] -> []
+  | x :: [] -> [x]
+  | x :: tl -> List.rev (x :: (List.rev tl))
+
+let filled_polygon (points : (int * int) list) (col : int) (buffer : t) = 
+  match (List.length points) with
+  | 0 -> ()
+  | _ -> (
+    let sorted_points = List.sort (fun a b -> 
+      let _, ay = a and _, by = b in
+      ay - by
+    ) points in
+    let _, y0 = List.hd sorted_points 
+    and _, y1 = List.hd (List.rev sorted_points) in
+    
+    let lines = List.map2 (fun a b -> (a, b)) (points) (rot points) in
+    let interpolated_lines = List.map (fun l -> 
+      let p0, p1 = l in
+      let x0, y0 = p0 and x1, y1 = p1 in
+      if (y0 < y1) then 
+        (y0, interpolate_line x0 y0 x1 y1)
+      else
+        (y1, interpolate_line x1 y1 x0 y0)
+    ) lines in
+
+    let map = Array.init ((y1 - y0) + 1) (fun _i -> []) in
+    List.iter (fun l -> 
+      let y, points = l in
+      List.iteri (fun i x -> 
+        let index = (y + i) - y0 in
+        map.(index) <- x :: map.(index)
+      ) points
+    ) interpolated_lines;
+
+    let height = Array.length buffer in
+    Array.iteri (fun i row -> 
+      let index = y0 + i in
+      if ((index >= 0) && (index < height)) then (
+
+        let brow = buffer.(index) in
+        let stride = Array.length brow in
+        let sorted_row = List.sort (fun a b -> a -b) row in
+
+        (* if (((List.length row) mod 2) != 0) then (
+          Printf.printf "%d: " (List.length row);
+          List.iter (fun i -> Printf.printf "%d " i) sorted_row;
+          Printf.printf "\n";
+        ); *)
+
+        let rec loop pairs = 
+          match pairs with
+          | [] -> ()
+          | raw_x0 :: [] -> (
+            let x0 = if (raw_x0 < 0) then 0 else (if (raw_x0 >= stride) then (stride - 1) else raw_x0) in
+            Array.fill brow x0 1 col;
+          )
+          | raw_x0 :: raw_x1 :: tl -> (
+            let rest = if (raw_x0 == raw_x1) then 
+              (raw_x0 :: tl) 
+            else (
+              let x0 = if (raw_x0 < 0) then 0 else (if (raw_x0 >= stride) then (stride - 1) else raw_x0)
+              and x1 = if (raw_x1 < 0) then 0 else (if (raw_x1 >= stride) then (stride - 1) else raw_x1) in 
+              let dist = (x1 - x0) + 1 in
+              Array.fill brow x0 dist col;
+              tl
+            ) in
+            loop rest
+          )
+        in loop sorted_row
+      )
+    ) map
+  )
+
 
 (* ----- *)
 
@@ -266,6 +375,7 @@ let render (buffer : t) (draw : Primitives.t list) =
     | Primitives.Line (p1, p2, col) -> draw_line p1.x p1.y p2.x p2.y col buffer
     | Primitives.Pixel (p, col) -> pixel_write p.x p.y col buffer
     | Primitives.Polygon (plist, col) -> draw_polygon (List.map (fun (p : Primitives.point) -> (p.x, p.y)) plist) col buffer
+    | Primitives.FilledPolygon (plist, col) -> filled_polygon (List.map (fun (p : Primitives.point) -> (p.x, p.y)) plist) col buffer
     | Primitives.Rect (p1, p2, col) -> draw_rect p1.x p1.y (p2.x - p1.x) (p2.y - p1.y) col buffer
     | Primitives.FilledRect (p1, p2, col) -> filled_rect p1.x p1.y (p2.x - p1.x) (p2.y - p1.y) col buffer
     | Primitives.Triangle (p1, p2, p3, col) -> draw_triangle p1.x p1.y p2.x p2.y p3.x p3.y col buffer

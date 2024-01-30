@@ -9,6 +9,7 @@ type t =
 | Line of point * point * int
 | Pixel of point * int
 | Polygon of point list * int
+| FilledPolygon of point list * int
 | Rect of point * point * int
 | FilledRect of point * point * int
 | Triangle of point * point * point * int

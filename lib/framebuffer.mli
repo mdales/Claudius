@@ -43,11 +43,13 @@ val draw_rect: int -> int -> int -> int -> int -> t -> unit
 
 val filled_rect: int -> int -> int -> int -> int -> t -> unit
 
-val draw_polygon: (int * int) list -> int -> t -> unit
-
 val draw_triangle: int -> int -> int -> int -> int -> int -> int -> t -> unit
 
 val filled_triangle: int -> int -> int -> int -> int -> int -> int -> t -> unit
+
+val draw_polygon: (int * int) list -> int -> t -> unit
+
+val filled_polygon: (int * int) list -> int -> t -> unit
 
 (** {1 Text rendering operations} *)
 
