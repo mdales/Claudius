@@ -26,7 +26,7 @@ let tick t s fb =
   Framebuffer.shader_inplace (fun _ -> 0) fb;
   let w, h = Screen.dimensions s in
   let ft = Float.of_int t in
-  let p = generate_poly (w/2) (h/2) 100 4 (ft /. 1000.) 15 in
+  let p = generate_poly (w/2) (h/2) 100 (3 + ((t /500) mod 5)) (ft /. 500.) 15 in
   Framebuffer.render fb [p];
   fb
 
