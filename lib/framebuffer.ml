@@ -237,16 +237,6 @@ let rot l =
   | x :: [] -> [x]
   | x :: tl -> List.rev (x :: (List.rev tl))
 
-let span_to_range span =
-  match span with
-  | Only (x) -> x, x
-  | Pair (x0, x1) -> x0, x1
-
-let _overlap s1 s2 =
-  let l1, u1 = span_to_range s1
-  and l2, u2 = span_to_range s2 in
-  ((l1 >= l2) && (l1 <= u2)) || ((u1 >= l2) && (u1 <= u2))
-
 type strand = ((int * int) * (int * int)) list
 
 let strand_direction (s : strand) : int =
@@ -387,28 +377,15 @@ let filled_polygon (points : (int * int) list) (col : int) (buffer : t) =
             )
           )
           | raw_x0 :: raw_x1 :: tl -> (
-            let rest =
-              (* if overlap raw_x0 raw_x1 then (
-              raw_x0 :: tl
-            ) else *)
-              (
-              let rx0 = (
-                match raw_x0 with
-                | Only (x) -> x
-                | Pair (x, _) -> x
-              ) in
-              let rx1 = (
-                match raw_x1 with
-                | Only (x) -> x
-                | Pair (_, x) -> x
-              ) in
+            let rx0 = leftmost raw_x0
+            and rx1 = rightmost raw_x1 in
+            if ((rx1 > 0) && (rx0 < (stride - 1))) then (
               let x0 = if (rx0 < 0) then 0 else (if (rx0 >= stride) then (stride - 1) else rx0)
               and x1 = if (rx1 < 0) then 0 else (if (rx1 >= stride) then (stride - 1) else rx1) in
               let dist = (x1 - x0) + 1 in
               Array.fill brow x0 dist col;
-              tl
-            ) in
-            loop rest
+            );
+            loop tl
           )
         in loop sorted_row
       )
