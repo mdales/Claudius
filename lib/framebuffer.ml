@@ -11,10 +11,10 @@ let to_array (buffer : t) : int array array =
 let init (dimensions : int * int) (f : int -> int -> int) : t =
   let width, height = dimensions in
   Array.init height (fun y ->
-    Array.init width (fun x -> 
+    Array.init width (fun x ->
         f x y
       )
-  ) 
+  )
 
 let pixel_write (x : int) (y : int) (col : int) (buffer : t) =
   if (x >= 0) && (x < Array.length (buffer.(0))) && (y >= 0) && (y < Array.length buffer) then
@@ -133,49 +133,19 @@ let draw_triangle (x0 : int) (y0 : int) (x1 : int) (y1 : int) (x2 : int) (y2 : i
   draw_line x1 y1 x2 y2 col buffer;
   draw_line x2 y2 x0 y0 col buffer
 
-let interpolate_line (x0 : int) (y0 : int) (x1 : int) (y1 : int) : int list =
-  let dx = abs (x1 - x0)
-  and sx = if x0 < x1 then 1 else -1
-  and dy = (abs (y1 - y0)) * -1
-  and sy = if y0 < y1 then 1 else -1 in
-  let initial_error = dx + dy in
-
-  let rec loop (x : int) (y : int) (error : int) (tail : int list) : int list =
-    match (x == x1) && (y == y1) with
-    | true -> tail
-    | false -> (
-      let e2 = 2 * error in
-      let nx = match e2 >= dy with
-      | false -> x
-      | true -> x + sx in
-      let ny = match e2 <= dx with
-      | false -> y
-      | true -> y + sy in
-      let nex = match (e2 >= dy) with
-      | false -> 0
-      | true -> dy in
-      let ney = match (e2 <= dx) with
-      | false -> 0
-      | true -> dx in
-      loop nx ny (error + nex + ney) (if ny == y then tail else nx :: tail)
-    )
-  in List.rev (loop x0 y0 initial_error [x0])
-
 type span =
-| Yet
 | Only of int
 | Pair of int * int
 
-let interpolate_line_2 (x0 : int) (y0 : int) (x1 : int) (y1 : int) : span array =
+let interpolate_line (x0 : int) (y0 : int) (x1 : int) (y1 : int) : span array =
   let dx = abs (x1 - x0)
   and sx = if x0 < x1 then 1 else -1
   and dy = (abs (y1 - y0)) * -1
   and sy = if y0 <= y1 then 1 else -1 in
   let initial_error = dx + dy in
 
-  let result = Array.init (abs (y1 - y0) + 1) (fun _i -> Yet) in
-  result.(0) <- Only(x0);
-  (* Printf.printf "%d, %d -> %d, %d ; %d\n" x0 y0 x1 y1 (Array.length result); *)
+  let result : span option array = Array.init (abs (y1 - y0) + 1) (fun _i -> None) in
+  result.(0) <- Some (Only x0);
 
   let rec loop (x : int) (y : int) (error : int) =
     match (x == x1) && (y == y1) with
@@ -197,25 +167,36 @@ let interpolate_line_2 (x0 : int) (y0 : int) (x1 : int) (y1 : int) : span array 
       let index = ny - (y0 * sy) in
       result.(index) <- (
         match result.(index) with
-        | Yet -> Only nx
-        | Only (a) -> (if a == nx then Only(a) else (if (a > nx) then Pair(nx, a) else (Pair(a, nx))))
-        | Pair (a, b) -> (if nx <= a then Pair(nx, b) else Pair(a, nx))
+        | None -> Some (Only nx)
+        | Some span -> Some (
+          match span with
+          | Only (a) -> (if a == nx then Only(a) else (if (a > nx) then Pair(nx, a) else (Pair(a, nx))))
+          | Pair (a, b) -> (if nx <= a then Pair(nx, b) else Pair(a, nx))
+        )
       )
       ;
       loop nx ny (error + nex + ney)
     )
   in loop x0 y0 initial_error;
-  (* Array.iteri (fun i v ->
-    match v with
-    | Yet -> Printf.printf "%d: Yet\n" i
-    | Only (x) -> Printf.printf "%d: Only %d\n" i x
-    | Pair (x0, x1) -> Printf.printf "%d: Pair %d %d\n" i x0 x1
-  ) result; *)
-  result
+  Array.map (fun maybe_span ->
+    match maybe_span with
+    | None -> assert false
+    | Some (span) -> span
+  ) result
+
+let leftmost span =
+  match span with
+  | Only (x) -> x
+  | Pair (x0, _) -> x0
+
+let rightmost span =
+  match span with
+  | Only (x) -> x
+  | Pair (_, x1) -> x1
 
 let filled_triangle (x0 : int) (y0 : int) (x1 : int) (y1 : int) (x2 : int) (y2 : int) (col : int) (buffer : t) =
   let points = [(x0, y0) ; (x1, y1) ; (x2, y2)] in
-  let sorted_points = List.sort (fun a b -> 
+  let sorted_points = List.sort (fun a b ->
     let _, ay = a and _, by = b in
     ay - by
   ) points in
@@ -232,19 +213,22 @@ let filled_triangle (x0 : int) (y0 : int) (x1 : int) (y1 : int) (x2 : int) (y2 :
   ) else (
     let s1 = interpolate_line x0 y0 x1 y1
     and s2 = interpolate_line x1 y1 x2 y2 in
-    s1 @ (List.tl s2)
+    Array.concat [s1 ; (Array.sub s2 1 ((Array.length s2) - 1))]
   ) in
-  assert ((List.length long_edge) == (List.length other_edge));
+  assert ((Array.length long_edge) == (Array.length other_edge));
 
-  let spans = List.map2 (fun a b -> (a, b)) long_edge other_edge in
-  List.iteri (fun i s ->
+  let spans = Array.map2 (fun a b -> (a, b)) long_edge other_edge in
+  Array.iteri (fun i s ->
     let row = buffer.(y0 + i) in
     let stride = Array.length row in
     let p, q = s in
-    let p0, p1 = if (p <= q) then p, q else q, p in
-    let x0 = if (p0 < 0) then 0 else (if (p0 >= stride) then (stride - 1) else p0)
-    and x1 = if (p1 < 0) then 0 else (if (p1 >= stride) then (stride - 1) else p1) in
-    Array.fill row x0 ((x1 - x0) + 1) col
+    let p0, p1 = if (leftmost p <= leftmost q) then p, q else q, p in
+    let r0, r1 = leftmost p0, rightmost p1 in
+    if ((r1 > 0) && (r0 < (stride - 1))) then (
+      let x0 = if (r0 < 0) then 0 else (if (r0 >= stride) then (stride - 1) else r0)
+      and x1 = if (r1 < 0) then 0 else (if (r1 >= stride) then (stride - 1) else r1) in
+      Array.fill row x0 ((x1 - x0) + 1) col
+    )
   ) spans
 
 let rot l =
@@ -253,81 +237,144 @@ let rot l =
   | x :: [] -> [x]
   | x :: tl -> List.rev (x :: (List.rev tl))
 
-
-let leftmost span =
-  match span with
-  | Yet -> assert false
-  | Only (x) -> x
-  | Pair (x0, _) -> x0
-
 let span_to_range span =
   match span with
-  | Yet -> assert false
   | Only (x) -> x, x
   | Pair (x0, x1) -> x0, x1
 
-let overlap s1 s2 =
+let _overlap s1 s2 =
   let l1, u1 = span_to_range s1
   and l2, u2 = span_to_range s2 in
   ((l1 >= l2) && (l1 <= u2)) || ((u1 >= l2) && (u1 <= u2))
+
+type strand = ((int * int) * (int * int)) list
+
+let strand_direction (s : strand) : int =
+  match s with
+  | [] -> 0
+  | hd :: _ ->
+    let p0, p1 = hd in
+    let _, y0 = p0 and _, y1 = p1 in
+    let diff = y1 - y0 in
+    if (diff = 0) then 0 else (diff / abs(diff))
+
+let poly_to_strands (points : (int * int) list) : strand list =
+  match points with
+  | [] -> []
+  | points -> (
+
+    let lines = List.combine points (rot points) in
+
+    let rec loop
+        (last_direction : int)
+        (current_strand : strand)
+        (result: strand list)
+        (remaining : ((int * int) * (int * int)) list)
+        : strand list =
+      match remaining with
+      | [] -> (match current_strand with
+        | [] -> result
+        | x -> (x :: result)
+      )
+      | hd :: tl -> (
+        let p0, p1 = hd in
+        let _, y0 = p0 and _, y1 = p1 in
+        let diff = y1 - y0 in
+        let direction = if (diff = 0) then 0 else (diff / abs(diff)) in
+        if (direction == last_direction) then (
+          loop direction (hd :: current_strand) result tl
+        ) else (
+          loop direction [hd] (current_strand :: result) tl
+        )
+      )
+    in
+    let raw = loop 0 [] [] lines in
+    let unwrapped = List.filter (fun x -> (List.length x) > 0) raw in
+    if (List.length unwrapped) < 2 then unwrapped else (
+      let head_dir = strand_direction (List.hd unwrapped)
+      and end_dir = strand_direction (List.hd (List.rev unwrapped)) in
+      if head_dir != end_dir then unwrapped else (
+        let fore = List.hd unwrapped
+        and shortened = List.tl unwrapped in
+        let rev_shorted = List.rev shortened in
+        let hd = List.hd rev_shorted in
+        let rest = List.tl rev_shorted in
+        (List.concat [fore ; hd]) :: rest
+      )
+    )
+  )
+
+let _make_polygon_closed (points : (int * int) list) : (int * int) list =
+  match points with
+  | [] -> []
+  | points -> (
+    let hd = List.hd points
+    and last = List.hd (List.rev points) in
+    if (hd == last) then points else (last :: points)
+  )
+
+let interpolate_strand (strand : ((int * int) * (int * int)) list) : (int * span array) =
+  let spans = List.map (fun line ->
+    let p0, p1 = line in
+    let x0, y0 = p0 and x1, y1 = p1 in
+    if y0 <= y1 then
+      (y0, interpolate_line x0 y0 x1 y1)
+    else
+      (y1, interpolate_line x1 y1 x0 y0)
+  ) strand in
+  let sorted_spans = List.sort (fun a b ->
+    let y0, _ = a and y1, _ = b in y0 - y1
+  ) spans in
+  match sorted_spans with
+  | [] -> (0, [||])
+  | hd :: [] -> hd
+  | hd :: tl -> (
+    let y0, first_span = hd in
+    let rest = List.map (fun x ->
+      let _, spans = x in
+      Array.sub spans 1 ((Array.length spans) - 1)
+    ) tl in
+    y0, Array.concat (first_span :: rest)
+  )
 
 
 let filled_polygon (points : (int * int) list) (col : int) (buffer : t) =
   match (List.length points) with
   | 0 -> ()
+  | 1 -> ()
   | _ -> (
     let sorted_points = List.sort (fun a b ->
       let _, ay = a and _, by = b in
       ay - by
     ) points in
-    let _, y0 = List.hd sorted_points
-    and _, y1 = List.hd (List.rev sorted_points) in
+    let _, min_y = List.hd sorted_points
+    and _, max_y = List.hd (List.rev sorted_points) in
+    let strands = poly_to_strands points in
+    let rendered_strands = List.map interpolate_strand strands in
 
-    let lines = List.map2 (fun a b -> (a, b)) (points) (rot points) in
-    let interpolated_lines = List.map (fun l ->
-      let p0, p1 = l in
-      let x0, y0 = p0 and x1, y1 = p1 in
-      if (y0 < y1) then
-        (y0, interpolate_line_2 x0 y0 x1 y1)
-      else
-        (y1, interpolate_line_2 x1 y1 x0 y0)
-    ) lines in
-
-    let map = Array.init ((y1 - y0) + 1) (fun _i -> []) in
+    let map = Array.init ((max_y - min_y) + 1) (fun _i -> []) in
     List.iter (fun l ->
       let y, points = l in
       Array.iteri (fun i span ->
-        let index = (y + i) - y0 in
+        let index = (y + i) - min_y in
         map.(index) <- span :: map.(index)
       ) points
-    ) interpolated_lines;
+    ) rendered_strands;
 
     let height = Array.length buffer in
     Array.iteri (fun i row ->
-      let index = y0 + i in
+      let index = min_y + i in
       if ((index >= 0) && (index < height)) then (
 
         let brow = buffer.(index) in
         let stride = Array.length brow in
         let sorted_row = List.sort (fun a b -> (leftmost a) - (leftmost b)) row in
 
-        (* if (((List.length row) mod 2) != 0) then (
-          Printf.printf "%d: " (List.length row);
-          List.iter (fun i ->
-            match i with
-            | Yet -> Printf.printf "Yet, "
-            | Only (x) -> Printf.printf "Only %d, " x
-            | Pair (x0, x1) -> Printf.printf "Pair %d %d, " x0 x1
-          ) sorted_row;
-          Printf.printf "\n";
-        ); *)
-
         let rec loop pairs =
           match pairs with
           | [] -> ()
           | raw_x0 :: [] -> (
             match raw_x0 with
-            | Yet -> ()
             | Only (x) -> (
               let x0 = if (x < 0) then 0 else (if (x >= stride) then (stride - 1) else x) in
               Array.fill brow x0 1 col;
@@ -340,23 +387,21 @@ let filled_polygon (points : (int * int) list) (col : int) (buffer : t) =
             )
           )
           | raw_x0 :: raw_x1 :: tl -> (
-            let rest = if overlap raw_x0 raw_x1 then (
+            let rest =
+              (* if overlap raw_x0 raw_x1 then (
               raw_x0 :: tl
-            ) else (
+            ) else *)
+              (
               let rx0 = (
                 match raw_x0 with
-                | Yet -> assert false
                 | Only (x) -> x
                 | Pair (x, _) -> x
               ) in
               let rx1 = (
                 match raw_x1 with
-                | Yet -> assert false
                 | Only (x) -> x
                 | Pair (_, x) -> x
               ) in
-
-
               let x0 = if (rx0 < 0) then 0 else (if (rx0 >= stride) then (stride - 1) else rx0)
               and x1 = if (rx1 < 0) then 0 else (if (rx1 >= stride) then (stride - 1) else rx1) in
               let dist = (x1 - x0) + 1 in

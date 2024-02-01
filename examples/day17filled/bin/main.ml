@@ -82,6 +82,7 @@ let tick t s fb =
   ))) |> Framebuffer.render fb;
   fb
 
+
 let () =
   Palette.of_list (List.rev (Palette.to_list (Palette.generate_mono_palette 128))) |>
   Screen.create 640 480 1 |>
