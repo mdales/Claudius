@@ -51,7 +51,7 @@ let tick t s fb =
   let tscale = 300. in
   Framebuffer.shader_inplace (fun p ->
   match p with
-  | _ -> if ((sin (ft /. tscale)) >= 0.) then 0 else 64
+  | _ -> if ((sin (ft /. tscale)) >= 0.) then 16 else 111
   ) fb;
 
   (match (sin (ft /. tscale)) >= 0. with
@@ -65,7 +65,7 @@ let tick t s fb =
         8
         ((Float.pi *. (1. /. 8.) *. (cos (ft /. tscale))))
         (* ((Int.of_float ((fcol *. 0.25) *. (cos (ft /. 150.)))) + ((col * 3) / 4)) *)
-        127
+        111
     )
   ))
   | false -> List.concat (List.init 4 (fun i ->
@@ -77,7 +77,7 @@ let tick t s fb =
           inner_radius
           4
           (((Float.pi *. (1. /. 4.) *. (0.0 +. (cos (ft /. tscale))))) +. (Float.pi /. 4.))
-          0 
+          16 
           (* (127 -((Int.of_float ((fcol *. 0.25) *. (cos (ft /. 150.)))) + ((col * 3) / 4))) *)
       )
   ))) |> Framebuffer.render fb;
