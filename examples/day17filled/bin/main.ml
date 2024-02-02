@@ -34,10 +34,10 @@ let generate_star (x : int) (y : int) (r1 : int) (r2 : int) (sides : int) (a : f
   Primitives.FilledPolygon (mixed, col)
 
 let generate_cross (x : int) (y : int) (_r1 : int) (_r2 : int) (sides : int) (a : float) (col : int) =
-  let s1 = generate_poly x y 132 sides a col |> poly_points in
+  let s1 = generate_poly x y 131 sides a col |> poly_points in
   let s2 = generate_poly x y 56 sides (a +. ((Float.pi *. 2.) /. ((Float.of_int sides) *. 2.))) col |> poly_points in
   let s1s2 = List.concat (List.map2 (fun a b -> [b ; a]) s1 s2) in
-  let s3 = generate_poly x y 102 (sides * 2) (a +. ((Float.pi *. 2.) /. ((Float.of_int sides) *. 4.))) col |> poly_points in
+  let s3 = generate_poly x y 101 (sides * 2) (a +. ((Float.pi *. 2.) /. ((Float.of_int sides) *. 4.))) col |> poly_points in
   let mixed = List.concat (List.map2 (fun a b -> [b ; a]) s1s2 s3) in
   Primitives.FilledPolygon (mixed, col)
 
@@ -48,12 +48,13 @@ let tick t s fb =
   let _fcol = Float.of_int (col + 1) in
   let inner_radius = 100
   and outer_radius = 131 in
+  let tscale = 300. in
   Framebuffer.shader_inplace (fun p ->
   match p with
-  | _ -> if ((sin (ft /. 300.)) >= 0.) then 0 else 127
+  | _ -> if ((sin (ft /. tscale)) >= 0.) then 0 else 64
   ) fb;
 
-  (match (sin (ft /. 300.)) >= 0. with
+  (match (sin (ft /. tscale)) >= 0. with
   | true -> List.concat (List.init 3 (fun i ->
     List.init 3 (fun j ->
       generate_star
@@ -62,7 +63,7 @@ let tick t s fb =
         inner_radius
         outer_radius
         8
-        ((Float.pi *. (1. /. 8.) *. (cos (ft /. 300.))))
+        ((Float.pi *. (1. /. 8.) *. (cos (ft /. tscale))))
         (* ((Int.of_float ((fcol *. 0.25) *. (cos (ft /. 150.)))) + ((col * 3) / 4)) *)
         127
     )
@@ -75,7 +76,7 @@ let tick t s fb =
           outer_radius
           inner_radius
           4
-          (((Float.pi *. (1. /. 4.) *. (0.0 +. (cos (ft /. 300.))))) +. (Float.pi /. 4.))
+          (((Float.pi *. (1. /. 4.) *. (0.0 +. (cos (ft /. tscale))))) +. (Float.pi /. 4.))
           0 
           (* (127 -((Int.of_float ((fcol *. 0.25) *. (cos (ft /. 150.)))) + ((col * 3) / 4))) *)
       )

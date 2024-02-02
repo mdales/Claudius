@@ -240,13 +240,17 @@ let rot l =
 type strand = ((int * int) * (int * int)) list
 
 let strand_direction (s : strand) : int =
-  match s with
-  | [] -> 0
-  | hd :: _ ->
-    let p0, p1 = hd in
-    let _, y0 = p0 and _, y1 = p1 in
-    let diff = y1 - y0 in
-    if (diff = 0) then 0 else (diff / abs(diff))
+  List.fold_right (fun a acc ->
+    match acc with
+    | 0 -> (
+      let p0, p1 = a in
+      let _, y0 = p0 and _, y1 = p1 in
+      let diff = y1 - y0 in
+      if (diff = 0) then 0 else (diff / abs(diff))
+    )
+    | x -> x
+  ) s 0
+    
 
 let poly_to_strands (points : (int * int) list) : strand list =
   match points with
@@ -271,10 +275,14 @@ let poly_to_strands (points : (int * int) list) : strand list =
         let _, y0 = p0 and _, y1 = p1 in
         let diff = y1 - y0 in
         let direction = if (diff = 0) then 0 else (diff / abs(diff)) in
-        if (direction == last_direction) then (
-          loop direction (hd :: current_strand) result tl
+        if direction == 0 then (
+          loop last_direction (hd :: current_strand) result tl  
         ) else (
-          loop direction [hd] (current_strand :: result) tl
+          if (direction == last_direction) then (
+            loop direction (hd :: current_strand) result tl
+          ) else (
+            loop direction [hd] (current_strand :: result) tl
+          )
         )
       )
     in
@@ -292,15 +300,6 @@ let poly_to_strands (points : (int * int) list) : strand list =
         (List.concat [fore ; hd]) :: rest
       )
     )
-  )
-
-let _make_polygon_closed (points : (int * int) list) : (int * int) list =
-  match points with
-  | [] -> []
-  | points -> (
-    let hd = List.hd points
-    and last = List.hd (List.rev points) in
-    if (hd == last) then points else (last :: points)
   )
 
 let interpolate_strand (strand : ((int * int) * (int * int)) list) : (int * span array) =
@@ -326,7 +325,6 @@ let interpolate_strand (strand : ((int * int) * (int * int)) list) : (int * span
     ) tl in
     y0, Array.concat (first_span :: rest)
   )
-
 
 let filled_polygon (points : (int * int) list) (col : int) (buffer : t) =
   match (List.length points) with
@@ -391,7 +389,6 @@ let filled_polygon (points : (int * int) list) (col : int) (buffer : t) =
       )
     ) map
   )
-
 
 (* ----- *)
 
