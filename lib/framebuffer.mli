@@ -82,5 +82,9 @@ val to_array: t -> int array array
     of rows, and each row is an array of palette entry colours. *)
 
 val merge: (int -> int -> int) -> t -> t -> t
+(** [merge f first second] Takes two framebuffers of equal size and applys the function [f] to each pixel 
+    pair in turn to generate a new framebuffer. *)
 
 val merge_inplace: (int -> int -> int) -> t -> t -> unit
+(** [merge_inplase f first second] Takes two framebuffers of equal size and applys the function [f] to each pixel 
+    pair in storing the result back in the first provided framebuffer. *)
