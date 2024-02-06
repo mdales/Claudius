@@ -29,33 +29,54 @@ val pixel_read: int -> int -> t -> int option
 
 (** {1 Drawing operations}
     These operations let you modify the framebuffer with basic shapes. This list isn't exhaustive,
-    but just some basics to let people get up and running. Inspired by the primatives from TIC80. *)
+    but just some basics to let people get up and running. Shapes will be automatically clipped to fit
+    the framebuffer. Position (0, 0) is in the top left of the screen. *)
 
 val draw_line: int -> int -> int -> int -> int -> t -> unit
-(** [draw_line x0 y0 x1 y1 colour framebuffer] Draws a line between the two points specified in
-    the specified colour. *)
+(** [draw_line x0 y0 x1 y1 colour framebuffer] Draws a line between ([x0], [y0]) ([x1], [y1]) specified in
+    the specified [colour] into [framebuffer]. *)
 
 val draw_circle: int -> int -> float -> int -> t -> unit
+(** [draw_circle x0 y0 radius colour framebuffer] Draws the outline of a circle centred at ([x0], [y0]) with the specified [radius]
+    in the specified [colour] into [framebuffer]. *)
 
 val filled_circle: int -> int -> float -> int -> t -> unit
+(** [filled_circle x0 y0 radius colour framebuffer] Draws a filled circle centred at ([x0], [y0]) with the specified [radius]
+    in the specified [colour] into [framebuffer]. *)
 
 val draw_rect: int -> int -> int -> int -> int -> t -> unit
+(** [draw_rect x y width height colour framebuffer] Draws the outline of a rectangle aligned with the window, with the top left at ([x], [y]) and size of ([width], [height])
+    in the specified [colour] into [framebuffer]. *)
 
 val filled_rect: int -> int -> int -> int -> int -> t -> unit
+(** [filled_rect x y width height colour framebuffer] Draws a filled rectangle aligned with the window, with the top left at ([x], [y]) and size of ([width], [height])
+    in the specified [colour] into [framebuffer]. *)
 
 val draw_triangle: int -> int -> int -> int -> int -> int -> int -> t -> unit
+(** [draw_triangle x0 y0 x1 y1 x2 y2 colour framebuffer] Draws the outline of a triangle made from the points ([x0], [y0]), ([x1], [y1]), and ([x2], [y2])
+    in the specified [colour] into [framebuffer]. *)
 
 val filled_triangle: int -> int -> int -> int -> int -> int -> int -> t -> unit
+(** [filled_triangle x0 y0 x1 y1 x2 y2 colour framebuffer] Draws a filled triangle made from the points ([x0], [y0]), ([x1], [y1]), and ([x2], [y2])
+    in the specified [colour] into [framebuffer]. *)
 
 val draw_polygon: (int * int) list -> int -> t -> unit
+(** [draw_polygon points colour framebuffer] Draws the outline of a polygon made from the list of [points]
+    in the specified [colour] into [framebuffer]. *)
 
 val filled_polygon: (int * int) list -> int -> t -> unit
+(** [filled_polygon points colour framebuffer] Draws a filled polygon made from the list of [points]
+    in the specified [colour] into [framebuffer]. *)
 
 (** {1 Text rendering operations} *)
 
 val draw_char: int -> int -> Font.t -> char -> int -> t -> int
+(** [draw_char x y font c colour framebuffer] Draws a single character [c] in the specified [colour] using [font]. The top left of 
+    the charcter is the point specified by position ([x], [y]). The return value is the number of pixels wide the character was. *)
 
 val draw_string: int -> int -> Font.t -> string -> int -> t -> int
+(** [draw_string x y font s colour framebuffer] Draws the string [s] in the specified [colour] using [font]. The top left of 
+    the first charcter is the point specified by position ([x], [y]). The return value is the number of pixels wide the string was. *)
 
 (** {1 Framebuffer wide operations} *)
 
