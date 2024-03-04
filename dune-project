@@ -5,22 +5,22 @@
 (generate_opam_files true)
 
 (source
- (github username/reponame))
+ (github mdales/claudius))
 
-(authors "Michael Dales")
+(authors "Michael Dales <michael@digitalflapjack.com>")
 
-(maintainers "Michael Dales")
+(maintainers "Michael Dales <michael@digitalflapjack.com>")
 
-(license LICENSE)
+(license ICS)
 
 (documentation https://url/to/documentation)
 
 (package
  (name claudius)
- (synopsis "A short synopsis")
+ (synopsis "A retro computer library.")
  (description "A longer description")
  (depends ocaml dune)
  (tags
-  (topics "to describe" your project)))
+  (graphics rendering paletted)))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
