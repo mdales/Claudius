@@ -5,8 +5,19 @@ Doesn't render to screen - used mostly by the framebuffer draw char/string mecha
 type t
 (** Type for a font *)
 
-type glyph
-(** Type for one entry in the font *)
+module Glyph : sig
+  type t
+  (** Type for one entry in the font *)
+
+
+  val dimensions: t -> (int * int * int * int)
+  (** [glyph_dimensions glyph] Returns the width and height of the specified glyph. *)
+
+  val bitmap: t -> bytes
+  (** [glyph_bitmap glyph] Renders a glyph to a series of bytes. The data is 1 bit per pixel,
+      as a series of bytes per row, padded to the appropriate next byte boundary. *)
+
+end
 
 
 (** {1 Initializations} *)
@@ -21,16 +32,9 @@ val load_psf_font: string -> (t, string) result
 val glyph_count: t -> int
 (** [glyph_count font] Returns a count of how many glyphs are in the font. *)
 
-val glyph_of_char: t -> Uchar.t -> glyph option
+val glyph_of_char: t -> Uchar.t -> Glyph.t option
 (** [glyph_of_char font char] Gets the glyph that maps to a given character in the font,
     or None if that character doesn't have an entry. *)
-
-val glyph_dimensions: glyph -> (int * int)
-(** [glyph_dimensions glyph] Returns the width and height of the specified glyph. *)
-
-val glyph_bitmap: glyph -> bytes
-(** [glyph_bitmap glyph] Renders a glyph to a series of bytes. The data is 1 bit per pixel, 
-    as a series of bytes per row, padded to the appropriate next byte boundary. *)
 
 
 (** {1 Debug} *)

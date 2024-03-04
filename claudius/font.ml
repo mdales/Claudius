@@ -14,17 +14,27 @@ type psfheader = {
   width : int32;
 }
 
+module Glyph = struct
+  type t = {
+    bitmap : bytes;
+    width : int;
+    height : int;
+  }
+
+  let dimensions g =
+    (g.width, g.height, 0, 0)
+
+  let bitmap g =
+    g.bitmap
+
+end
+
 type t = {
   header : psfheader;
   glyphs : bytes array;
   map : (Uchar.t * int) list;
 }
 
-type glyph = {
-  bitmap : bytes;
-  width : int;
-  height : int;
-}
 
 (* ----- internal ----- *)
 
@@ -138,7 +148,7 @@ let print_header (font : t) =
 let glyph_count (font : t) : int =
   Int32.to_int font.header.number_of_glyphs
 
-let glyph_of_char (font : t) (u : Uchar.t) : glyph option =
+let glyph_of_char (font : t) (u : Uchar.t) : Glyph.t option =
   match (List.assoc_opt u font.map) with
   | None -> None
   | Some index -> (
@@ -150,9 +160,3 @@ let glyph_of_char (font : t) (u : Uchar.t) : glyph option =
       height = Int32.to_int font.header.height;
     }
   )
-
-let glyph_dimensions (g : glyph) : (int * int) =
-  (g.width, g.height)
-
-let glyph_bitmap (g : glyph) : bytes =
-  g.bitmap

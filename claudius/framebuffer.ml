@@ -396,8 +396,8 @@ let draw_char (x : int) (y : int) (f : Font.t) (c : char) (col : int) (buffer : 
   match Font.glyph_of_char f (Uchar.of_char c) with
   | None -> 0
   | Some glyph -> (
-    let gw, gh = Font.glyph_dimensions glyph in
-    let bmp = Font.glyph_bitmap glyph in
+    let gw, gh, _, _ = Font.Glyph.dimensions glyph in
+    let bmp = Font.Glyph.bitmap glyph in
     let bytes_per_line = (Bytes.length bmp) / gh in
     for h = 0 to (gh - 1) do
       for w = 0 to (bytes_per_line - 1) do
