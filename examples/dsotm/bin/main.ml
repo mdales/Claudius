@@ -56,7 +56,7 @@ let boot s =
   draw_flair s fb;
   fb
 
-let tick _t _s fb = fb
+let tick _t _s fb _i = fb
 
 let () =
   Palette.of_list ((Palette.to_list (Palette.generate_mono_palette 8)) @ (rainbow)) |>

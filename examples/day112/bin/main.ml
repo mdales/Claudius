@@ -18,7 +18,7 @@ let generate_tile ft w h base_col over_col : Primitives.t list =
   ) in loop ((h / band_height) - 1) []
 
 
-let tick t s _p =
+let tick t s _p _i =
   (* Random.init 42; *)
   let buffer = Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0) in
   let w, h = Screen.dimensions s in

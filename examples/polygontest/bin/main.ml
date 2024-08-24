@@ -22,7 +22,7 @@ let generate_poly (x : int) (y : int) (r : int) (sides : int) (a : float) (col :
   ) points in
   Primitives.FilledPolygon (shifted, col)
 
-let tick t s fb =
+let tick t s fb _i =
    Framebuffer.shader_inplace (fun _ -> 0) fb;
 (* let boot s = *)
   let fb = Framebuffer.init (Screen.dimensions s) (fun _ _ -> 0) in
@@ -33,8 +33,6 @@ let tick t s fb =
   let p = generate_poly (w/2) (h/2) 100 (3 + ((t /500) mod 5)) (ft /. 500.) 15 in
   Framebuffer.render fb [p];
   fb
-
-(* let tick _t _s fb = fb *)
 
 let () =
   Palette.of_list (0xffffff :: (Palette.to_list (Palette.generate_plasma_palette 15))) |>

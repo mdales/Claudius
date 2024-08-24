@@ -1,6 +1,6 @@
 open Claudius
 
-let tick t _s prev =
+let tick t _s prev _i =
   let buffer = Framebuffer.shader (fun pixel -> 
     match pixel with 
     | 0 -> 0

@@ -62,7 +62,7 @@ let filled_triangle x0 y0 x1 y1 x2 y2 col fb font =
   ) sorted_points
 
 
-let tick t s fb =
+let tick t s fb _i =
   Framebuffer.shader_inplace (fun _p -> 0) fb;
   let width, height = Screen.dimensions s
   and ft = (Float.of_int t) /. 500.

@@ -1,6 +1,6 @@
 open Claudius
 
-let tick t s fb = 
+let tick t s fb _i =
   Unix.sleepf 0.005;
   let special = ((t mod 200) != 0) in
   Framebuffer.shader_inplace (fun p ->

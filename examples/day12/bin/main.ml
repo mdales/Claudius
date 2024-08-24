@@ -1,6 +1,6 @@
 open Claudius
 
-let tick t s _p =
+let tick t s _p _i =
   Random.init 42;
   let ft = (Float.of_int t) /. 20. in
   Framebuffer.init (Screen.dimensions s) (fun x y ->

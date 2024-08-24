@@ -2,7 +2,7 @@ open Claudius
 
 let havrekaka_palette = "000:ffffff6df7c111adc1606c813934571e88755bb361a1e55af7e476f99252cb4d686a3771c92464f48cb6f7b69e9b9c82"
 
-let tick t s p =
+let tick t s p _i =
 
   Unix.sleepf 0.02;
 

@@ -1,20 +1,23 @@
 (* open Graphics *)
 open Tsdl
 
+module KeyCodeSet = Set.Make(Int)
+
 type boot_func = Screen.t -> Framebuffer.t
-type tick_func = int -> Screen.t -> Framebuffer.t -> Framebuffer.t
+type tick_func = int -> Screen.t -> Framebuffer.t -> KeyCodeSet.t -> Framebuffer.t
 
 type bitmap_t = (int32, Bigarray.int32_elt, Bigarray.c_layout) Bigarray.Array1.t
+
 
 (* ----- *)
 
 let (>>=) = Result.bind
 let (>|=) v f = Result.map f v
 
-let sdl_init (width : int) (height : int) (title : string) = 
-  Sdl.init Sdl.Init.(video + events) >>= fun () -> 
-  Sdl.create_window ~w:width ~h:height title Sdl.Window.opengl >>= fun w -> 
-  Sdl.create_renderer w >|= 
+let sdl_init (width : int) (height : int) (title : string) =
+  Sdl.init Sdl.Init.(video + events) >>= fun () ->
+  Sdl.create_window ~w:width ~h:height title Sdl.Window.opengl >>= fun w ->
+  Sdl.create_renderer w >|=
   fun r -> (w, r)
 
 let framebuffer_to_bigarray (s : Screen.t) (buffer : Framebuffer.t) (bitmap : bitmap_t) =
@@ -31,7 +34,7 @@ let render_texture (r : Sdl.renderer) (texture : Sdl.texture) (s : Screen.t) (bi
   let width, _ = Screen.dimensions s in
   Sdl.render_clear r >>= fun () ->
   Sdl.update_texture texture None bitmap width >>= fun () ->
-  Sdl.render_copy r texture >|= fun () -> 
+  Sdl.render_copy r texture >|= fun () ->
   Sdl.render_present r
 
 (* ----- *)
@@ -56,23 +59,30 @@ let run (title : string) (boot : boot_func option) (tick : tick_func) (s : Scree
       in
 
       let e = Sdl.Event.create () in
-      
-      let rec loop (t : int) (prev_buffer : Framebuffer.t) = (
-        let updated_buffer = tick t s prev_buffer in
+
+      let rec loop (t : int) (prev_buffer : Framebuffer.t) (keys : KeyCodeSet.t) = (
+        let updated_buffer = tick t s prev_buffer keys in
 
         framebuffer_to_bigarray s updated_buffer bitmap;
 
-        match render_texture r texture s bitmap with 
+        match render_texture r texture s bitmap with
         | Error (`Msg e) -> Sdl.log "Boot error: %s" e
-        | Ok () ->
+        | Ok () -> (
+          let exit, keys =
           match Sdl.poll_event (Some e) with
           | true -> (
             match Sdl.Event.(enum (get e typ)) with
-            | `Quit -> ()
-            | _ -> loop (t + 1) updated_buffer
+            | `Quit -> (true, keys)
+            | `Key_down -> (false, KeyCodeSet.add Sdl.Event.(get e keyboard_keycode) keys)
+            | `Key_up -> (false, KeyCodeSet.remove Sdl.Event.(get e keyboard_keycode) keys)
+            | _ -> (false, keys)
           )
-          | false -> loop (t + 1) updated_buffer
-      ) in loop 0 initial_buffer;
+          | false -> (false, keys) in
+          match exit with
+          | true -> ()
+          | false -> loop (t + 1) updated_buffer keys
+        )
+      ) in loop 0 initial_buffer KeyCodeSet.empty;
 
       Sdl.destroy_texture texture;
       Sdl.destroy_renderer r;

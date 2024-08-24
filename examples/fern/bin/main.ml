@@ -3,7 +3,7 @@ open Claudius
 let state = ref (0., 0.)
 
 
-let tick _t s fb = 
+let tick _t s fb _i =
     Framebuffer.shader_inplace (fun p -> 
         if (p < 128) then p else p - 1
     ) fb;

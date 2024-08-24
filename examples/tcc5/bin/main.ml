@@ -2,7 +2,7 @@ open Claudius
 
 let vapour_palette = "000:7400b86930c35e60ce5390d94ea8de48bfe356cfe164dfdf72efdd80ffdb7400b86930c35e60ce5390d94ea8de48bfe3"
 
-let tick t s _p =
+let tick t s _p _i =
   let ft = (float_of_int t)
   and w, h = (Screen.dimensions s)
   and colors = (Palette.size (Screen.palette s)) in

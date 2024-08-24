@@ -18,7 +18,7 @@ let boot s =
   fb
 
 
-let tick_d t s fb =
+let tick_d t s fb _i =
   let w, h = Screen.dimensions s in
   let cx = (w/2) and cy = (h/2) in
   let delta = Framebuffer.init (w, h) (fun _x _y -> 0) in
@@ -46,11 +46,11 @@ let tick_d t s fb =
   Framebuffer.merge_inplace (+) fb delta;
   fb
 
-let tick t s fb =
+let tick t s fb i =
   if ((t mod 200) == 0) then
     boot s
   else 
-    tick_d t s fb
+    tick_d t s fb i
 
 let () =
   Palette.generate_mono_palette 256 |>

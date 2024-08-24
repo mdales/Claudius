@@ -33,7 +33,7 @@ let fract_shader (t : int) (s : Screen.t) (x : int) (y : int) =
   | None -> 0
   | Some col -> (col mod ((Palette.size (Screen.palette s)) - 1)) + 1
 
-let tick t s _p =
+let tick t s _p _i =
   Framebuffer.init (Screen.dimensions s) (fract_shader t s)
 
 let () =

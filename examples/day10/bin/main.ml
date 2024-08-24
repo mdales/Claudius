@@ -29,7 +29,7 @@ let drawpoly (x : int) (y : int) (r : int) (sides : int) (a : float) (col : int)
 let boot s =
   Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0)
   
-let tick t s prev =
+let tick t s prev _i =
   let w, h = Screen.dimensions s in
   (* Fade what came before *)
   let buffer = Framebuffer.shader (fun pixel ->

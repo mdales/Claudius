@@ -37,7 +37,7 @@ let project (point: float * float * float * float * float * float * int) (t : in
 
 (* ----- *)
   
-let tick t s fb = 
+let tick t s fb _i =
   Framebuffer.shader_inplace (fun _pixel -> 0) fb;
 
   (* Work out next point *)

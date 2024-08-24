@@ -4,7 +4,7 @@ let havrekaka_palette = "000:ffffff6df7c111adc1606c813934571e88755bb361a1e55af7e
 
 (* ----- *)
 
-let tick t s _p =
+let tick t s _p _i =
   let cols = Palette.size (Screen.palette s) in
   Framebuffer.init (Screen.dimensions s) (fun x y ->
     let fx = Float.of_int x and fy = Float.of_int y  and ft = Float.of_int t in

@@ -41,7 +41,7 @@ let generate_cross (x : int) (y : int) (_r1 : int) (_r2 : int) (sides : int) (a 
   let mixed = List.concat (List.map2 (fun a b -> [b ; a]) s1s2 s3) in
   Primitives.FilledPolygon (mixed, col)
 
-let tick t s fb =
+let tick t s fb _i =
   let width, height = Screen.dimensions s in
   let ft = Float.of_int t in
   let col = (Palette.size (Screen.palette s)) - 1 in

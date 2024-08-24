@@ -28,11 +28,11 @@ let project (point: float * float * float) (s : Screen.t) : (int * int * int) =
 (* ----- *)
 
 let boot s =
-  Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0) 
-  
-let tick _t s prev = 
+  Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0)
+
+let tick _t s prev _i =
   (* Fade what came before *)
-  let buffer = Framebuffer.shader (fun pixel -> 
+  let buffer = Framebuffer.shader (fun pixel ->
     match pixel with
     | 0 -> pixel
     | _ -> (pixel - 1)
@@ -40,7 +40,7 @@ let tick _t s prev =
 
   (* Work out next point *)
   let next = lorenz !cur in
-  
+
   (* Draw the latest update *)
   let x0, y0, _ = project !cur s in
   let x1, y1, col = project next s in

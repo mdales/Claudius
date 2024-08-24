@@ -10,7 +10,7 @@ let boot (screen : Screen.t) : Framebuffer.t =
   Framebuffer.filled_circle (width / 2) (height / 2) (Float.of_int (height / 2)) 1 buffer;
   buffer
 
-let tick (t : int) (screen : Screen.t) (prev : Framebuffer.t) : Framebuffer.t =
+let tick (t : int) (screen : Screen.t) (prev : Framebuffer.t) (_inputs : Base.KeyCodeSet.t) : Framebuffer.t =
   let buffer = Framebuffer.shader (fun pixel ->
     match pixel with
     | 0 | 1 -> pixel

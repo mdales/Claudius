@@ -99,7 +99,7 @@ let render_to_primitives (ft : float) (s : Screen.t) (points : point list) : Pri
 
 (* ----- *)
 
-let tick (t : int) (s : Screen.t) (prev : Framebuffer.t) : Framebuffer.t =
+let tick (t : int) (s : Screen.t) (prev : Framebuffer.t) (_inputs : Base.KeyCodeSet.t): Framebuffer.t =
   let buffer = Framebuffer.shader (fun pixel ->
     if pixel > 2 then (pixel - 2) else 0
   ) prev in

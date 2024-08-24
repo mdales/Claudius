@@ -3,10 +3,10 @@ let tic80_palette = "000:1a1c2c5d275db13e53ef7d57ffcd75a7f07038b76425717929366f3
 let prose1 = "Hello, world!"
 let prose2 = "Hello to FieldFX, thanks for the inspirations and encouragement!"
 
-let tick t s fb = 
+let tick t s fb _i =
   let width, height = Screen.dimensions s in
   Framebuffer.shader_inplace (fun _ -> 0) fb;
-  match (Screen.font s) with 
+  match (Screen.font s) with
   | None -> fb
   | Some font -> (
     let prose1_width = Framebuffer.draw_string 0 0 font prose1 0 fb in
@@ -22,7 +22,7 @@ let tick t s fb =
     fb
   )
 
-let () = 
+let () =
   match Font.load_psf_font "thirdparty/tamzen-font/psf/TamzenForPowerline10x20.psf" with
   | Error (reason) -> Printf.printf "Failed to read: %s" reason
   | Ok font -> (

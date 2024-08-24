@@ -44,7 +44,7 @@ let lines_from_points (points : point list) (threshold : int) : line list =
 
 (* ----- *)
 
-let tick t s _p =
+let tick t s _p _i =
   let buffer = Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0) in
 
   let ft = (Float.of_int t) /. 10. in

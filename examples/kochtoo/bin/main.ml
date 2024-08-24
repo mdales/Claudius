@@ -69,7 +69,7 @@ let star ~(length : float) ~(level : int) ~(turtle : turtle) : turtle =
 
 (* ----- *)
 
-let tick (t : int) (screen : Screen.t) (_prev : Framebuffer.t) : Framebuffer.t =
+let tick (t : int) (screen : Screen.t) (_prev : Framebuffer.t) (_inputs : Base.KeyCodeSet.t) : Framebuffer.t =
   let width, height = Screen.dimensions screen in
   
   let stars = List.init 3 (fun i -> 

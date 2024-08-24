@@ -52,7 +52,7 @@ let update_spheres (spheres : item array array) =
     ) row
   ) spheres
 
-let tick (t : int) (screen : Screen.t) (_prev : Framebuffer.t) : Framebuffer.t =
+let tick (t : int) (screen : Screen.t) (_prev : Framebuffer.t) (_inputs : Base.KeyCodeSet.t) : Framebuffer.t =
   Random.init 42;
   if (t mod 1000) == 0 then (reset_spheres t spheres);
 

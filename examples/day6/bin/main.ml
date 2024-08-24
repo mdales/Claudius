@@ -22,7 +22,7 @@ let line t s col =
     col
   )
 
-let tick t s p = 
+let tick t s p _i =
   Framebuffer.render p 
     (List.concat 
     [(if t >= tails then [(line (t - tails) s 0)] else []) ; 

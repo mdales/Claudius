@@ -1,6 +1,6 @@
 open Claudius
 
-let tick t s _prev =
+let tick t s _prev _i =
   let palsize = Palette.size (Screen.palette s) in
   Framebuffer.init (Screen.dimensions s) (fun x y -> 
       let ft = (Float.of_int t) /. 10. and fx = (Float.of_int x) /. 140. and fy = (Float.of_int y) /. 140. in
