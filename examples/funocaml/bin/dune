@@ -1,4 +1,4 @@
 (executable
  (public_name funocaml)
  (name main)
- (libraries funocaml claudius bdfparser))
+ (libraries funocaml claudius bdfparser hooke))

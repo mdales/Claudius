@@ -8,6 +8,7 @@ let opening = [
   "Michael Dales";
   "michael@digitalflapjack.com";
   "";
+  "https://github.com/mdales/tcc23";
   "https://github.com/mdales/claudius";
   "https://github.com/mdales/bdfparser";
 ]
@@ -119,6 +120,6 @@ let tick title_font body_font prose _t s fb _i =
   fb
 
 let generate_slide prose =
-  let body_font = Result.get_ok (Bdf.create "/Users/michael/Dev/classic-mac-fonts/bdf/Geneva-12.bdf")
+  let body_font = Result.get_ok (Bdf.create "/Users/michael/Dev/classic-mac-fonts/bdf/Courier-12.bdf")
   and title_font = Result.get_ok (Bdf.create "/Users/michael/Dev/chicago-bdf/Chicago-12.bdf") in
   (palette, boot, tick title_font body_font prose)
