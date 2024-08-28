@@ -19,8 +19,6 @@ let line t s col =
     col
   )
 
-let boot s = Framebuffer.init (Screen.dimensions s) (fun _ _ -> 0)
-
 let tick t s p _i =
   Framebuffer.render p
     (List.concat

@@ -3,6 +3,7 @@ open Claudius
 let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t -> Framebuffer.t -> Base.KeyCodeSet.t -> Framebuffer.t)) * string option) list = [
   (Textslide.generate_slide Textslide.opening, None);
   (Scrollerslide.generate_slide "Tiny Code Chrismas 2022", None);
+  (Quote.slide, None);
   (Scrollerslide.generate_slide "Tiny Code Chrismas 2023", None);
   (Tccday2.slide, Some "Day 1");
   (Textslide.generate_slide Textslide.tcc1_lua_example, None);
@@ -17,12 +18,18 @@ let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t 
   (Tccday8extra.slide, Some "Day 8 extra");
   (Scrollerslide.generate_slide "Genuary 2024", None);
   (Prompts.slide, None);
+  (Textslide.generate_slide Textslide.claudius_slide, None);
+  (Textslide.generate_slide Textslide.primatives_slide, None);
   (Genuary1.slide, Some "1: Particals");
-  (Genuary16.slide, Some "15: Use a physics engine");
+  (Genuary2.slide, Some "2: No Palette");
+  (Textslide.generate_slide Textslide.genuary2_code_example, None);
   (Genuary6.slide, Some "6: Screen saver");
+  (Textslide.generate_slide Textslide.genuary6_code_example, None);
+  (Genuary16.slide, Some "15: Use a physics engine");
   (Genuary17.slide, Some "17: Islamic Patterns");
   (Genuary17filled.slide, Some "17: Islamic Patterns");
   (Genuary20.slide, Some "20 & 23: Generative Typography and 8x8");
+  (Credits.slide, None);
 ]
 
 let overlay_font = Result.get_ok (
@@ -55,9 +62,10 @@ let master_boot s =
 
 let counter = ref 1.0
 let last_fps = ref 0.0
+let prevt = ref (Unix.gettimeofday ())
+let toffset = ref 0
 
 let master_tick t s _prev i =
-  let start = Unix.gettimeofday () in
   let i_list = Base.KeyCodeSet.to_list i in
   let updated_index = match !debounce, i_list with
   | [0x4000004F], [] -> ((!slide_index) + 1) mod (List.length slides)
@@ -79,20 +87,22 @@ let master_tick t s _prev i =
   let fb = match new_slide with
   | false -> !in_colour_space_prev
   | true -> (
+    toffset := t;
     match boot with
     | None -> Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0)
     | Some b -> b childscreen
   )
   in
-  let rendered = tick t childscreen fb i in
+  let rendered = tick (t - !toffset) childscreen fb i in
   in_colour_space_prev := rendered;
   let final = Framebuffer.shader (fun p -> p + paloff) rendered in
   (match overlay with
   | None -> ()
   | Some prose -> ignore (Textslide.draw_string 50 50 overlay_font prose 12 final));
-  let endt = Unix.gettimeofday () in
-  counter := (!counter) +. (endt -. start);
 
+  let nowt = Unix.gettimeofday () in
+  counter := (!counter) +. (nowt -. !prevt);
+  prevt := nowt;
   if (t mod 100) == 0 then (
     last_fps := 100. /. !counter;
     counter := 0.0

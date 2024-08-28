@@ -13,6 +13,50 @@ let opening = [
   "https://github.com/mdales/bdfparser";
 ]
 
+let claudius_slide = [
+  "Claudius overview";
+  "Functional fantasy console library";
+  "Flitter meets TIC-80";
+  "";
+  "Key types/concepts:";
+  "* Screen.t - record for dimensions, palette, etc.";
+  "* Palette.t - list of colours used in final render.";
+  "* Framebuffer.t - the abstract framebuffer in palette space";
+  "* Primatives.t - operations to render to the framebuffer";
+  "";
+  "Challenges:";
+  "* What's a useful set of features";
+  "* Immutability vs inplace";
+  "* Is state a library problem or not";
+  "* Where to keep up the facade";
+  "";
+]
+
+let primatives_slide = [
+  "Primatives.mli";
+  "(** Primatives are a way to build up a list of rendering operations for the framebuffer ";
+  "    in a functional style and then render them at once. *)";
+  "";
+  "type point = {";
+  "    x : int ;";
+  "    y : int ;";
+  "}";
+  " ";
+  "type t =";
+  "| Circle of point * float * int";
+  "| FilledCircle of point * float * int";
+  "| Line of point * point * int";
+  "| Pixel of point * int";
+  "| Polygon of point list * int";
+  "| FilledPolygon of point list * int";
+  "| Rect of point * point * int";
+  "| FilledRect of point * point * int";
+  "| Triangle of point * point * point * int";
+  "| FilledTriangle of point * point * point * int";
+  "| Char of point * Font.t * char * int";
+  "| String of point * Font.t * string * int";
+]
+
 let tcc1_lua_example = [
   "Day 1 code in Lua";
   "";
@@ -192,6 +236,65 @@ let tcc5_code_example = [
   "      inner_tick !t;";
   "      t := !t + 1;";
   "  done";
+]
+
+let genuary2_code_example = [
+  "Genuary day 2 code";
+  "open Claudius";
+  "";
+  "let tick t s _prev _inputs =";
+  "  let palsize = Palette.size (Screen.palette s) in";
+  "  Framebuffer.init (Screen.dimensions s) (fun x y -> ";
+  "      let ft = (Float.of_int t) /. 10. and fx = (Float.of_int x) /. 140. ";
+  "      and fy = (Float.of_int y) /. 140. in";
+  "      let z = 10. +. (sin (ft /. 1000.) *. 5.)";
+  "      and d = 10. +. (cos (ft /. 1000.) *. 5.) in";
+  "      let fc = (sin (sin ((fx +. ft) /. z)) +. sin (sin ((fy +. ft) /. d))) *. ";
+  "          Float.of_int(palsize / 2) in";
+  "      let rc = ((int_of_float fc)) mod palsize in";
+  "      if rc >= 0 then rc else (rc + palsize)";
+  "  )";
+  "";
+  "let () =";
+  "  Palette.generate_plasma_palette 1024 |>";
+  "  Screen.create 640 480 1 |>";
+  "  Base.run \"Genuary Day 2: No Palette\" None tick";
+]
+
+let genuary6_code_example = [
+  "Genary day 6 code";
+  "open Claudius";
+  "";
+  "let tails = 50";
+  "";
+  "let triangle (x : float) (amplitude : float) (period : float) : float =";
+  "((2. *. amplitude) /. Float.pi) *. asin (sin (x *. ((2. *. Float.pi) /. period)))";
+  "";
+  "let point d ft =";
+  "  let fd = Float.of_int d in";
+  "  (d / 2) + Int.of_float (triangle (ft +. Random.float 50.) (fd /. 2.) (50. +. Random.float 100.))";
+  "";
+  "let line t s col =";
+  "  Random.init 789123;";
+  "  let ft = Float.of_int t in";
+  "  let w, h = Screen.dimensions s in";
+  "  Primitives.Line (";
+  "    { x = point w ft ; y = point h ft },";
+  "    { x = point w ft ; y = point h ft },";
+  "    col";
+  "  )";
+  "";
+  "let tick t s p _i =";
+  "  Framebuffer.render p (";
+  "    (if t >= tails then [(line (t - tails) s 0)] else []) @";
+  "    [line t s ((t mod ((Palette.size (Screen.palette s)) - 1)) + 1)]";
+  "  );";
+  "  p";
+  "";
+  "let () =";
+  "Palette.of_list (0x000000 :: (List.rev (Palette.to_list (Palette.generate_plasma_palette 31)))) |>";
+  "  Screen.create 512 384 1 |>";
+  "  Base.run \"Genuary Day 6: Screen saver\" None tick";
 ]
 
 let palette =  Palette.load_tic80_palette "000:1a1c2c5d275db13e53ef7d57ffcd75a7f07038b76425717929366f3b5dc941a6f673eff7f4f4f494b0c2566c86333c57"

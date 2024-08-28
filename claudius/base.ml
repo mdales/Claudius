@@ -17,7 +17,7 @@ let (>|=) v f = Result.map f v
 let sdl_init (width : int) (height : int) (title : string) =
   Sdl.init Sdl.Init.(video + events) >>= fun () ->
   Sdl.create_window ~w:width ~h:height title Sdl.Window.opengl >>= fun w ->
-  Sdl.create_renderer w >|=
+  Sdl.create_renderer ~flags:Sdl.Renderer.(accelerated + presentvsync) w >|=
   fun r -> (w, r)
 
 let framebuffer_to_bigarray (s : Screen.t) (buffer : Framebuffer.t) (bitmap : bitmap_t) =
