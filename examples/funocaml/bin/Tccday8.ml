@@ -45,4 +45,4 @@ let tick t s fb _i =
     | Some v -> v
   ) fb; fb
 
-let slide = (palette, boot, tick)
+let slide = (palette, Some boot, tick)

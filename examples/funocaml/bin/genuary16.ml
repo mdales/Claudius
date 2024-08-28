@@ -52,8 +52,6 @@ let update_spheres (spheres : item array array) =
     ) row
   ) spheres
 
-let boot s = Framebuffer.init (Screen.dimensions s) (fun _ _ -> 0)
-
 let tick (t : int) (screen : Screen.t) (_prev : Framebuffer.t) (_inputs : Base.KeyCodeSet.t) : Framebuffer.t =
   Random.init 42;
   if (t mod 1000) == 0 then (reset_spheres t spheres);
@@ -81,4 +79,4 @@ let tick (t : int) (screen : Screen.t) (_prev : Framebuffer.t) (_inputs : Base.K
 
 let palette = Palette.of_list (0x666666 :: (Palette.to_list (Palette.generate_plasma_palette 255)))
 
-let slide = (palette, boot, tick)
+let slide = (palette, None, tick)

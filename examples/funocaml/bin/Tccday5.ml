@@ -4,9 +4,6 @@ let vapour_palette = "000:7400b86930c35e60ce5390d94ea8de48bfe356cfe164dfdf72efdd
 
 let palette = Palette.load_tic80_palette vapour_palette
 
-let boot s =
-  Framebuffer.init (Screen.dimensions s) (fun _x _y -> 1)
-
 let tick t s _p i =
   let notshow1 = Base.KeyCodeSet.exists (fun x -> x == 0x00000031) i in
   let notshow2 = Base.KeyCodeSet.exists (fun x -> x == 0x00000032) i in
@@ -49,4 +46,4 @@ let tick t s _p i =
   Framebuffer.filled_circle (w / 2) (h / 2) 15. 1 buffer;
   buffer
 
-  let slide = (palette, boot, tick)
+  let slide = (palette, None, tick)

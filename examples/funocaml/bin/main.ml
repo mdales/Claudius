@@ -1,12 +1,14 @@
 open Claudius
 
-let slides = [
+let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t -> Framebuffer.t -> Base.KeyCodeSet.t -> Framebuffer.t)) * string option) list = [
   (Textslide.generate_slide Textslide.opening, None);
   (Scrollerslide.generate_slide "Tiny Code Chrismas 2022", None);
   (Scrollerslide.generate_slide "Tiny Code Chrismas 2023", None);
-  (Tccday2.slide, Some "Day 2");
+  (Tccday2.slide, Some "Day 1");
+  (Textslide.generate_slide Textslide.tcc1_lua_example, None);
+  (Textslide.generate_slide Textslide.tcc1_code_example, None);
   (Tccday5.slide, Some "Day 5");
-  (Textslide.generate_slide Textslide.code_example, None);
+  (Textslide.generate_slide Textslide.tcc5_code_example, None);
   (Tccday8.slide, Some "Day 8");
   (Tccday11.slide, Some "Day 11");
   (Scrollerslide.generate_slide "Tiny Code Chrismas: Extra", None);
@@ -14,7 +16,13 @@ let slides = [
   (Tccday3extra.slide, Some "Day 3 extra");
   (Tccday8extra.slide, Some "Day 8 extra");
   (Scrollerslide.generate_slide "Genuary 2024", None);
-  (Genuary16.slide, Some "16: Use a physics engine");
+  (Prompts.slide, None);
+  (Genuary1.slide, Some "1: Particals");
+  (Genuary16.slide, Some "15: Use a physics engine");
+  (Genuary6.slide, Some "6: Screen saver");
+  (Genuary17.slide, Some "17: Islamic Patterns");
+  (Genuary17filled.slide, Some "17: Islamic Patterns");
+  (Genuary20.slide, Some "20 & 23: Generative Typography and 8x8");
 ]
 
 let overlay_font = Result.get_ok (
@@ -39,14 +47,19 @@ let debounce = ref []
 let in_colour_space_prev = ref (Framebuffer.init (640, 480) (fun _ _ -> 0))
 
 let master_boot s =
-  let ((_p, b, _t), _) = List.nth slides !slide_index in
+  let ((_p, boot, _t), _) = List.nth slides !slide_index in
   let paloff = (List.nth offsets !slide_index) in
-  b s |> Framebuffer.shader (fun p -> p + paloff)
+  (match boot with
+  | None -> Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0)
+  | Some b -> b s ) |> Framebuffer.shader (fun p -> p + paloff)
+
+let counter = ref 1.0
+let last_fps = ref 0.0
 
 let master_tick t s _prev i =
+  let start = Unix.gettimeofday () in
   let i_list = Base.KeyCodeSet.to_list i in
   let updated_index = match !debounce, i_list with
-  | [0x00000020], [] -> ((!slide_index) + 1) mod (List.length slides)
   | [0x4000004F], [] -> ((!slide_index) + 1) mod (List.length slides)
   | [0x40000050], [] -> ((!slide_index) - 1) mod (List.length slides)
   | _ -> !slide_index
@@ -55,7 +68,7 @@ let master_tick t s _prev i =
   let new_slide = updated_index != !slide_index in
   slide_index := updated_index;
   debounce := i_list;
-  let (p, b, tick), overlay = List.nth slides !slide_index in
+  let (p, boot, tick), overlay = List.nth slides !slide_index in
   let paloff = (List.nth offsets !slide_index) in
   let w, h = Screen.dimensions s in
   let scale = Screen.scale s in
@@ -65,14 +78,31 @@ let master_tick t s _prev i =
   in
   let fb = match new_slide with
   | false -> !in_colour_space_prev
-  | true -> b childscreen
+  | true -> (
+    match boot with
+    | None -> Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0)
+    | Some b -> b childscreen
+  )
   in
   let rendered = tick t childscreen fb i in
   in_colour_space_prev := rendered;
   let final = Framebuffer.shader (fun p -> p + paloff) rendered in
   (match overlay with
   | None -> ()
-  | Some prose -> ignore (Textslide.draw_string 50 50 overlay_font prose 0 final));
+  | Some prose -> ignore (Textslide.draw_string 50 50 overlay_font prose 12 final));
+  let endt = Unix.gettimeofday () in
+  counter := (!counter) +. (endt -. start);
+
+  if (t mod 100) == 0 then (
+    last_fps := 100. /. !counter;
+    counter := 0.0
+  );
+  let show_fps = Base.KeyCodeSet.exists (fun x -> x == 0x00000066) i in
+  if show_fps then (
+    let fpss = Printf.sprintf "%d fps" (int_of_float !last_fps) in
+    ignore (Textslide.draw_string 50 450 overlay_font fpss 12 final);
+  );
+
   final
 
 let () =
@@ -81,7 +111,11 @@ let () =
   | Ok font -> (
     let s = Palette.of_list (List.concat_map (fun ((p, _, _), _) -> Palette.to_list p) slides) |>
       Screen.create_with_font 640 480 2 font in
-    let (_, b, _), _ = List.nth slides 0 in
-    in_colour_space_prev := b s;
+    let (_, boot, _), _ = List.nth slides 0 in
+    in_colour_space_prev := (
+      match boot with
+      | None -> Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0)
+      | Some b -> b s
+    );
     Base.run "Fun OCaml 2024" (Some master_boot) master_tick s
   )

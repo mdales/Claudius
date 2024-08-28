@@ -12,9 +12,6 @@ let distance (x1 : float) (y1 : float) (x2 : float) (y2 : float) : float =
 
 (* ----- *)
 
-let boot s =
-  Framebuffer.init (Screen.dimensions s) (fun _ _ -> 0)
-
 let tick t s _p _i =
   let w, h = Screen.dimensions s in
   let palsize = Palette.size (Screen.palette s) in
@@ -37,4 +34,4 @@ let tick t s _p _i =
     if d < 0 then d + palsize else d
   )
 
-let slide = (palette, boot, tick)
+let slide = (palette, None, tick)

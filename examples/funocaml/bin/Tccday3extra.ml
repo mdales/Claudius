@@ -46,9 +46,6 @@ let lines_from_points (points : point list) (threshold : int) : line list =
 
 let palette = Palette.of_list (generate_mono_palette 16)
 
-let boot s =
-  Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0)
-
 let tick t s _p _i =
   let buffer = Framebuffer.init (Screen.dimensions s) (fun _x _y -> 0) in
 
@@ -67,4 +64,4 @@ let tick t s _p _i =
 
 (* ----- *)
 
-let slide = (palette, boot, tick)
+let slide = (palette, None, tick)

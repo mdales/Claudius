@@ -13,29 +13,189 @@ let opening = [
   "https://github.com/mdales/bdfparser";
 ]
 
-let code_example = [
-  "Day 5 code";
-  "let tick t s _p _i =";
-  "  let ft = (float_of_int t)";
-  "  and w, h = (Screen.dimensions s)";
-  "  and colors = (Palette.size (palette)) in";
-  "  let fcolors = Float.of_int colors in";
-  "  let buffer = Framebuffer.init (w, h) (fun i j ->";
-  "    let x = Float.of_int (i - (w / 2))";
-  "    and y = Float.of_int (j - (h / 2)) in";
-  "    let d1 = (float_of_int w) /. sqrt ((x *. x) +. (y *. y) +. 1.0)";
-  "    and c1 = ((atan2 y x) +. Float.pi) *. (fcolors /. (2.0 *. Float.pi)) in";
-  "    let c2 = c1 +. (sin (ft /. 70.0) *. Float.pi *. 2.0)";
-  "    and d2 = d1 +. (Float.rem (ft /. 10.0) fcolors) in";
-  "    let p = (int_of_float (Float.floor c2)) lxor (int_of_float (Float.floor d2)) in";
-  "    let pindex = (p mod colors) in";
-  "    if pindex < 0 then (colors + pindex) else (pindex)";
-  "  ) in";
-  "  Framebuffer.filled_circle (w / 2) (h / 2) 15. 1 buffer;";
-  "  buffer";
+let tcc1_lua_example = [
+  "Day 1 code in Lua";
+  "";
+  "w=240";
+  "h=136";
+  "";
+  "b=120";
+  "t=0";
+  "";
+  "snow_count=100";
+  "snow={}";
+  "";
+  "function BOOT()";
+  "  for i=1,snow_count do";
+  "    snow[i]={math.random() * w, math.random() * b}";
+  "  end";
+  "end";
+  "";
+  "function TIC()";
+  "  -- world";
+  "  cls(8)";
+  "  rect(0, b, w, h-b, 12)";
+  "";
+  "  -- pot";
+  "  tri((w/2)+20, b-20, (w/2)-10, b, (w/2)-20, b-20, 2)";
+  "  tri((w/2)-10, b, (w/2)+10, b, (w/2)+20, b-20, 2)";
+  "";
+  "  -- trunk";
+  "  rect((w/2)-5, b-50, 10, 30, 3)";
+  "";
+  "  -- leaves";
+  "  for i=0, 4 do";
+  "    d = ((i + 2) * 5) + (i * 10)";
+  "    r = (i + 1) * 7";
+  "    tri((w/2), d, (w/2)-r, d+20, (w/2)+r, d+20, 7)";
+  "  end";
+  "";
+  "  -- star";
+  "  tri((w/2), 5, (w/2)-7, 15, (w/2)+7, 15, 3 + ((t/20)%2))";
+  "  tri((w/2), 20, (w/2)-7, 10, (w/2)+7, 10, 3 + ((t/20)%2))";
+  "";
+  "  -- stars";
+  "  for i = 1, snow_count do";
+  "    x=snow[i][1]";
+  "    y=snow[i][2]";
+  "    pix(x, y, 12)";
+  "    y = (y + 1) % b";
+  "    if y<1 then";
+  "      -- if we hit the ground,";
+  "      -- make a new flake";
+  "      x = math.random() * w";
+  "      snow[i][1] = x";
+  "    end";
+  "    snow[i][2] = y";
+  "  end";
+  "";
+  "  t = t + 1";
+  "end";
 ]
 
-let palette =
+let tcc1_code_example = [
+  "Day 1 code in OCaml";
+  "open Graphics";
+  "";
+  "let draw_background () = ";
+  "  let horizon_height = (480 / 3) in";
+  "    set_color white;";
+  "    fill_rect 0 0 640 horizon_height;";
+  "    set_color blue;";
+  "    fill_rect 0 horizon_height 640 (480  - horizon_height)";
+  "";
+  "let draw_stars () = ";
+  "  set_color white;";
+  "  for i = 0 to 480 do";
+  "    plot (Random.int 640) i";
+  "  done";
+  "";
+  "let draw_tree x y =";
+  "  (* pot *)";
+  "  set_color red;";
+  "  let pot_height = 70 in";
+  "    let pot_upper_radius = 50 in ";
+  "      let pot_lower_radius = 30 in";
+  "        fill_poly [| ";
+  "          (x + pot_lower_radius, y); ";
+  "          (x + pot_upper_radius, y + pot_height); ";
+  "          (x - pot_upper_radius, y + pot_height); ";
+  "          (x - pot_lower_radius, y) ";
+  "        |]; ; ; ";
+  "    (* trunk *)";
+  "    set_color (rgb 0xC0 0x80 0x20);";
+  "    let trunk_height = 50 in";
+  "      let trunk_radius = 20 in";
+  "          fill_rect (x - trunk_radius) (y + pot_height) (trunk_radius * 2) (trunk_height); ;";
+  "      (* leaves *)";
+  "      set_color (rgb 0x20 0xA0 0x20);";
+  "      let tree_height = 250 in";
+  "        let tiers = 4 in";
+  "          let tree_radius = 100 in";
+  "              for i = 0 to tiers do";
+  "              (* let i = 0 in *)";
+  "                fill_poly [| ";
+  "                  ((x + tree_radius) + ((tiers - i) * 15), y + pot_height + trunk_height + (i * 30)); ";
+  "                  (x, y + pot_height + trunk_height + tree_height - ((tiers - i) * 30));";
+  "                  ((x - tree_radius) - ((tiers - i) * 15), y + pot_height + trunk_height + (i * 30)) ";
+  "                |]";
+  "              done; ; ;";
+  "        (* star *)";
+  "        set_color yellow;";
+  "        let star_offset = (y + pot_height + trunk_height + tree_height) in";
+  "          fill_poly [| (x, star_offset - 20); (x + 15, star_offset + 10); (x - 15, star_offset + 10) |];";
+  "          fill_poly [| (x, star_offset + 20); (x + 15, star_offset - 10); (x - 15, star_offset - 10) |]";
+  "";
+  "let draw_scene () = ";
+  "  draw_background ();";
+  "  draw_stars ();";
+  "  draw_tree 320 60";
+  "  ";
+  "let () = ";
+  "  auto_synchronize false;";
+  "  display_mode false;";
+  "  remember_mode true;";
+  "  (* The space here before the res is important :/ *)";
+  "  open_graph \" 640x480\";";
+  "  draw_scene ();";
+  "  synchronize ();";
+  "  ignore (wait_next_event [ Key_pressed ])";
+]
+
+let tcc5_code_example = [
+  "Day 5 code";
+  "let tick (t : int) =";
+  "  (* Generate some useful consts - type safety is not good for sizecoding! *)";
+  "  let ft = float_of_int t";
+  "  and height = size_y () and width = size_x () ";
+  "  and colors = (List.length palette) in";
+  "  let fcolors = float_of_int colors in";
+  "  (* This effect is pixel functional, so we can do it in the buffer init function! *)";
+  "  for j = 0 to height do";
+  "    for i = 0 to width do";
+  "      (* offset to middle of screen *)";
+  "      let x = float_of_int (i - (width / 2))";
+  "      and y = Float.of_int (j - (height / 2)) in";
+  "";
+  "      let d1 = (float_of_int width) /. sqrt ((x *. x) +. (y *. y) +. 1.0)";
+  "      and c1 = ((atan2 y x) +. Float.pi) *. (fcolors /. (2.0 *. Float.pi)) in";
+  "";
+  "      let c2 = c1 +. (sin (ft /. 70.0) *. Float.pi *. 2.0)";
+  "      and d2 = d1 +. (Float.rem (ft /. 10.0) fcolors) in";
+  "";
+  "      let p = (int_of_float (Float.floor c2)) lxor (int_of_float (Float.floor d2)) in";
+  "";
+  "      let pindex = (p mod colors) in";
+  "      let color = List.nth palette (if pindex < 0 then (colors + pindex) else pindex) in";
+  "      set_color color; plot i j";
+  "    done";
+  "  done;";
+  "  set_color (List.nth palette 1);";
+  "  fill_circle (width / 2) (height / 2) 15";
+  "";
+  "let inner_tick (t : int) =";
+  "    tick t;";
+  "    synchronize ()";
+  "";
+  "let () =";
+  "  open_graph \" 640x480\";";
+  "  set_window_title \"TCC Day 5\";";
+  "  auto_synchronize false;";
+  "";
+  "  let t = ref 0 in";
+  "  while true do";
+  "    (* Unix.sleepf 0.05; *)";
+  "    let status = wait_next_event[ Poll; Key_pressed ] in";
+  "    if status.keypressed && status.key == ' ' then ";
+  "      raise Exit ";
+  "    else";
+  "      inner_tick !t;";
+  "      t := !t + 1;";
+  "  done";
+]
+
+let palette =  Palette.load_tic80_palette "000:1a1c2c5d275db13e53ef7d57ffcd75a7f07038b76425717929366f3b5dc941a6f673eff7f4f4f494b0c2566c86333c57"
+let _palette =
   Palette.of_list [
     0x00FFFFFF;
     0x001B202B;
@@ -97,11 +257,27 @@ let string_length (f : Bdf.t) (s : string) : int =
     acc + cwidth
   ) 0 sl
 
-let boot s =
-  Framebuffer.init (Screen.dimensions s) (fun _x _y ->  0)
+let offset = ref 0
+let debounce = ref []
 
-let tick title_font body_font prose _t s fb _i =
-  (* let fb = Framebuffer.init (Screen.dimensions s) (fun _x _y ->  0) in*)
+let boot s =
+  offset := 0;
+  Framebuffer.init (Screen.dimensions s) (fun _x _y ->  15)
+
+let tick title_font body_font prose _t s _fb i =
+
+  let i_list = Base.KeyCodeSet.to_list i in
+  let updated_offset = match !debounce, i_list with
+  | [0x00000020], [] -> (!offset) + 1
+  | [0x40000051], [] -> (!offset) + 1
+  | [0x40000052], [] -> (!offset) - 1
+  | _ -> !offset
+  in
+  offset := updated_offset;
+  debounce := i_list;
+
+
+  let fb = Framebuffer.init (Screen.dimensions s) (fun _x _y ->  0) in
   let _w, _h = Screen.dimensions s in
   List.iteri (fun i s ->
 
@@ -111,9 +287,16 @@ let tick title_font body_font prose _t s fb _i =
 
     let _width = string_length font s in
     let inset = 5 in
-    (* (w / 2) - (width / 2))  in *)
 
-    ignore(draw_string inset ((i + 1) * 17) font s  1 fb)
+    let trimmed = String.trim s in
+    let comment = ((String.starts_with ~prefix:"(*" trimmed ) && (String.ends_with ~suffix:"*)" trimmed )) ||
+      (String.starts_with ~prefix:"--" trimmed) in
+
+    let col = match comment with
+    | false -> 12
+    | true -> 13
+    in
+    ignore(draw_string inset ((i + 1 - !offset) * 17) font s  col fb)
 
   ) prose;
 
@@ -122,4 +305,4 @@ let tick title_font body_font prose _t s fb _i =
 let generate_slide prose =
   let body_font = Result.get_ok (Bdf.create "/Users/michael/Dev/classic-mac-fonts/bdf/Courier-12.bdf")
   and title_font = Result.get_ok (Bdf.create "/Users/michael/Dev/chicago-bdf/Chicago-12.bdf") in
-  (palette, boot, tick title_font body_font prose)
+  (palette, Some boot, tick title_font body_font prose)

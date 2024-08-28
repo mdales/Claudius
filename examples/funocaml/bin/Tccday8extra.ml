@@ -44,4 +44,4 @@ let tick (t : int) (screen : Screen.t) (prev : Framebuffer.t) (_inputs : Base.Ke
   done;
   buffer
 
-let slide = (palette, boot, tick)
+let slide = (palette, Some boot, tick)

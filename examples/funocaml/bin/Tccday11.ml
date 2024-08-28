@@ -40,15 +40,13 @@ let point_cmp (a : point) (b : point) : int =
 
 (* ----- *)
 
-let boot s =
-  Framebuffer.init (Screen.dimensions s) (fun _ _ -> 0)
-
 let tick t s _fb _i =
   let fb = Framebuffer.init (Screen.dimensions s) (fun _ _ -> 0) in
   let palsize = (Palette.size (Screen.palette s) - 1) in
   let w, h = Screen.dimensions s in
 
   let ft = float_of_int t in
+  let ft = ft /. 3. in
   let o = sin (ft /. 10.) in
   let offset = if o < 0. then ((0. -. o) *. 4.0) else 0. in
   let points : point array = Array.make (17 * 17 * 17) {x=0. ; y=0. ; z=0. } in
@@ -85,4 +83,4 @@ let tick t s _fb _i =
   fb
 
 
-let slide = (vpalette, boot, tick)
+let slide = (vpalette, None, tick)
