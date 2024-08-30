@@ -1,7 +1,17 @@
 open Claudius
 
-let prose = "\"The enemy of art is the absence of limitations.\""
-let author = "Orson Wells"
+let wells_quote = (
+  "\"The enemy of art is the absence of limitations.\"",
+  "Orson Wells"
+)
+
+let lynch_quote = (
+  "\"I don't know why people expect art to make sense.\"",
+  "David Lynch"
+)
+
+(* let prose = "\"The enemy of art is the absence of limitations.\""
+let author = "Orson Wells"*)
 
 let prose_font = Result.get_ok (
   Bdfparser.Bdf.create "/Users/michael/dev/classic-mac-fonts/bdf/Geneva-24.bdf"
@@ -10,7 +20,8 @@ let author_font = Result.get_ok (
   Bdfparser.Bdf.create "/Users/michael/dev/classic-mac-fonts/bdf/Times-14.bdf"
 )
 
-let tick t s _p _i =
+let tick (prose, author) t s _p _i =
+
   let w, h = Screen.dimensions s in
   let palsize = (Palette.size (Screen.palette s) - 1) in
 
@@ -41,4 +52,4 @@ let tick t s _p _i =
 
 let palette = Palette.of_list (0 :: (Palette.to_list (Palette.generate_plasma_palette 16)))
 
-let slide = (palette, None, tick)
+let generate_slide quote = (palette, None, tick quote)

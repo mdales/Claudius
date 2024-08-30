@@ -1,9 +1,14 @@
 open Claudius
 
 let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t -> Framebuffer.t -> Base.KeyCodeSet.t -> Framebuffer.t)) * string option) list = [
+
+
   (Textslide.generate_slide Textslide.opening, None);
+
   (Scrollerslide.generate_slide "Tiny Code Chrismas 2022", None);
   (Image.generate_slide "/Users/michael/Desktop/tic80.pcx", None);
+  (Quote.generate_slide Quote.wells_quote, None);
+
   (Scrollerslide.generate_slide "Tiny Code Chrismas 2023", None);
   (Tccday2.slide, Some "Day 1");
   (Textslide.generate_slide Textslide.tcc1_lua_example, None);
@@ -13,25 +18,33 @@ let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t 
   (Tccday8.slide, Some "Day 8");
   (Tccday11.slide, Some "Day 11");
   (Tccday12.slide, Some "Day 12");
+
   (Scrollerslide.generate_slide "Tiny Code Chrismas: Extra", None);
   (Tccday2extra.slide, Some "Day 2 extra");
   (Tccday3extra.slide, Some "Day 3 extra");
   (Tccday8extra.slide, Some "Day 8 extra");
+
+  (Image.generate_slide "/Users/michael/Desktop/claudius.pcx", None);
+  (Image.generate_slide "/Users/michael/Desktop/flitter.pcx", None);
+  (Textslide.generate_slide Textslide.claudius_slide, None);
+  (Quote.generate_slide Quote.lynch_quote, None);
+
   (Scrollerslide.generate_slide "Genuary 2024", None);
   (Prompts.slide, None);
-  (Quote.slide, None);
-  (Image.generate_slide "/Users/michael/Desktop/claudius.pcx", None);
-  (Textslide.generate_slide Textslide.claudius_slide, None);
-  (Textslide.generate_slide Textslide.primatives_slide, None);
-  (Genuary1.slide, Some "1: Particals");
-  (Genuary2.slide, Some "2: No Palette");
+  (Genuary2.slide, Some "No Palette");
   (Textslide.generate_slide Textslide.genuary2_code_example, None);
-  (Genuary6.slide, Some "6: Screen saver");
-  (Textslide.generate_slide Textslide.genuary6_code_example, None);
-  (Genuary16.slide, Some "15: Use a physics engine");
-  (Genuary17.slide, Some "17: Islamic Patterns");
-  (Genuary17filled.slide, Some "17: Islamic Patterns");
-  (Genuary20.slide, Some "20 & 23: Generative Typography and 8x8");
+  (Genuary1.slide, Some "Particals");
+  (Textslide.generate_slide Textslide.genuary1_code_example, None);
+  (Genuary6.slide, Some "Screen saver");
+  (* (Textslide.generate_slide Textslide.genuary6_code_example, None);*)
+  (Textslide.generate_slide Textslide.primatives_slide, None);
+  (Genuary17.slide, Some "Islamic Patterns");
+  (Genuary17filled.slide, Some "Islamic Patterns");
+  (Genuary20.slide, Some "Generative Typography and 8x8");
+  (Genuary16.slide, Some "Use a physics engine");
+
+  (Scrollerslide.generate_slide "Summary", None);
+  (Textslide.generate_slide Textslide.summary_slide, None);
   (Credits.slide, None);
 ]
 

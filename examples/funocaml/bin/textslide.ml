@@ -2,7 +2,7 @@ open Claudius
 open Bdfparser
 
 let opening = [
-  "Learning OCaml with Tiny Code Xmas";
+  "Learning OCaml with Tiny Code Christmas & Genuary";
   "Fun OCaml 2024";
   "";
   "Michael Dales";
@@ -14,6 +14,7 @@ let opening = [
   "https://github.com/mdales/pcxlib";
   "";
   "https://tcc.lovebyte.party";
+  "https://github.com/jonathanhogg/flitter";
 ]
 
 let claudius_slide = [
@@ -27,12 +28,21 @@ let claudius_slide = [
   "* Framebuffer.t - the abstract framebuffer in palette space";
   "* Primatives.t - operations to render to the framebuffer";
   "";
+  "Idioms:";
+  "* Pixel functional - like shaders";
+  "* Screen functional - transforming data to primatives";
+  "* Imperative - sometimes it's just what you need";
+  "";
   "Challenges:";
   "* What's a useful set of features";
   "* Immutability vs inplace";
   "* Is state a library problem or not";
   "* Where to keep up the facade";
   "";
+]
+
+let summary_slide = [
+  "Summary";
 ]
 
 let primatives_slide = [
@@ -241,8 +251,33 @@ let tcc5_code_example = [
   "  done";
 ]
 
+let genuary1_code_example = [
+  "Particals code";
+  "let tick (t : int) (s : Screen.t) (prev : Framebuffer.t) (_inputs : Base.KeyCodeSet.t): Framebuffer.t =";
+  "  let buffer = Framebuffer.init (Screen.dimensions s) (fun _ -> 0)";
+  " ";
+  "  let ft = Float.of_int t in";
+  "";
+  "  generate_planet_points";
+  "  |> List.map (fun p ->";
+  "    rotate_y (0.02 *. ft) p |> rotate_x (0.01 *. ft) |> rotate_z (0.005 *. ft)";
+  "  )";
+  "  |> List.sort point_z_cmp";
+  "  |> render_to_primitives ft s";
+  "  |> Framebuffer.render buffer;";
+  "";
+  "  buffer";
+  "";
+  "(* ----- *)";
+  "";
+  "let () =";
+  "  Palette.generate_mono_palette 16";
+  "  |> Screen.create 640 480 1";
+  "  |> Base.run \"Genuary Day 1: Particals\" None tick";
+]
+
 let genuary2_code_example = [
-  "Genuary day 2 code";
+  "No Palette code";
   "open Claudius";
   "";
   "let tick t s _prev _inputs =";
@@ -265,7 +300,7 @@ let genuary2_code_example = [
 ]
 
 let genuary6_code_example = [
-  "Genary day 6 code";
+  "Screen Saver code";
   "open Claudius";
   "";
   "let tails = 50";

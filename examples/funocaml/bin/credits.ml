@@ -12,6 +12,9 @@ let prompts = [
   "enfys";
   "genuary.art";
   "glasgowdave";
+  "lovebyte";
+  "field-fx";
+  "fun ocaml";
 ]
 
 let boot s = Framebuffer.init (Screen.dimensions s) (fun _ _ -> 10)

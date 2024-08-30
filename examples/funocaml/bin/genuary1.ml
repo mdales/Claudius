@@ -33,7 +33,7 @@ let point_z_cmp (a : point) (b : point) : int =
 
 (* ----- *)
 
-let generate_sphere (ft : float) : point list =
+let generate_sphere : point list =
   let slices = 18
   and lats = 8
   and radius = 30.
@@ -75,7 +75,7 @@ let generate_sphere (ft : float) : point list =
     let dots_per_ring = 200 + (5 * ring * ring_spacing) in
     Array.init dots_per_ring (fun d ->
       let fd = Float.of_int d in
-      let a = (2. *. fd *. Float.pi /. (Float.of_int dots_per_ring)) +. ft in
+      let a = (2. *. fd *. Float.pi /. (Float.of_int dots_per_ring)) in
       {
         x = (r +. offset) *. cos a ;
         y = 0. ;
@@ -107,7 +107,7 @@ let tick (t : int) (s : Screen.t) (prev : Framebuffer.t) (_inputs : Base.KeyCode
   (* let ft = 100. in *)
   let ft = Float.of_int t in
 
-  generate_sphere ft
+  generate_sphere
   |> List.map (fun p ->
     rotate_y (0.02 *. ft) p |> rotate_x (0.01 *. ft) |> rotate_z (0.005 *. ft)
   )
