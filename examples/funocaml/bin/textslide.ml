@@ -11,6 +11,9 @@ let opening = [
   "https://github.com/mdales/tcc23";
   "https://github.com/mdales/claudius";
   "https://github.com/mdales/bdfparser";
+  "https://github.com/mdales/pcxlib";
+  "";
+  "https://tcc.lovebyte.party";
 ]
 
 let claudius_slide = [
@@ -379,9 +382,16 @@ let tick title_font body_font prose _t s _fb i =
   offset := updated_offset;
   debounce := i_list;
 
-
   let fb = Framebuffer.init (Screen.dimensions s) (fun _x _y ->  0) in
-  let _w, _h = Screen.dimensions s in
+  let w, h = Screen.dimensions s in
+
+  let palsize = Palette.size (Screen.palette s) in
+
+  let step = h / palsize in
+  for i = 0 to palsize do
+    Framebuffer.filled_rect (w - 16) (step * i) 16 step (palsize - (i + 1)) fb
+  done;
+
   List.iteri (fun i s ->
 
     let font = match i with

@@ -6,7 +6,7 @@ let beta = 2.667 *)
 let dt = 0.001
 
 let cur = ref (List.init 10240 (fun i ->
-    ((Random.float 30.) -. 15., (Random.float 120.) -. 60., (Random.float 310.) -. 150., 
+    ((Random.float 30.) -. 15., (Random.float 120.) -. 60., (Random.float 310.) -. 150.,
     10. +. (Random.float 4.), 20. +. (Random.float 16.), 2. +. (Random.float (0.667 *. 2.)),
     i)
   ))
@@ -36,24 +36,25 @@ let project (point: float * float * float * float * float * float * int) (t : in
   (dy, dx, palrange)
 
 (* ----- *)
-  
+
 let tick t s fb _i =
   Framebuffer.shader_inplace (fun _pixel -> 0) fb;
 
   (* Work out next point *)
   let next = List.map lorenz !cur in
-  
+
   (* Draw the latest update *)
-  List.iter2 (fun cur next ->
+  List.map2 (fun cur next ->
     let x0, y0, _ = project cur t s in
     let x1, y1, col = project next t s in
-    Framebuffer.draw_line x0 y0 x1 y1 col fb;
-  ) !cur next;
+    Primitives.Line ( {x = x0; y = y0}, {x = x1; y = y1}, col)
+  ) !cur next |>
+  Framebuffer.render fb;
 
   cur := next;
   fb
 
-let () = 
+let () =
   Palette.of_list [ 0xaaccff ; 0x0 ; 0xff0000 ; 0x0 ; 0x00ff00 ; 0x0 ; 0x0000ff ; 0x0 ] |>
   Screen.create 640 480 1 |>
   Base.run "Genuary Day 19: Flocking" None tick

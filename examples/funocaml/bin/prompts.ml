@@ -44,8 +44,8 @@ let tick t s prev _i =
 
   let font = Option.get (Screen.font s) in
 
-  if (t mod 50) == 0 then (
-    let idx = (t / 50) mod (List.length prompts) in
+  if (t mod 25) == 0 then (
+    let idx = (t / 25) mod (List.length prompts) in
     let prose = List.nth prompts idx in
     let prose_w = (Framebuffer.draw_string 10 (0-100) font prose 255 buffer) in
     let bounds = w - prose_w in

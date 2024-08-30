@@ -2,8 +2,6 @@ open Claudius
 
 let palette = Palette.load_tic80_palette "000:ffffff6df7c111adc1606c813934571e88755bb361a1e55af7e476f99252cb4d686a3771c92464f48cb6f7b69e9b9c82"
 
-
-
 (* ----- *)
 (*
 let random_line (width : int) (palette : color list) : (color array) =

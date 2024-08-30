@@ -3,7 +3,7 @@ open Claudius
 let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t -> Framebuffer.t -> Base.KeyCodeSet.t -> Framebuffer.t)) * string option) list = [
   (Textslide.generate_slide Textslide.opening, None);
   (Scrollerslide.generate_slide "Tiny Code Chrismas 2022", None);
-  (Quote.slide, None);
+  (Image.generate_slide "/Users/michael/Desktop/tic80.pcx", None);
   (Scrollerslide.generate_slide "Tiny Code Chrismas 2023", None);
   (Tccday2.slide, Some "Day 1");
   (Textslide.generate_slide Textslide.tcc1_lua_example, None);
@@ -12,12 +12,15 @@ let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t 
   (Textslide.generate_slide Textslide.tcc5_code_example, None);
   (Tccday8.slide, Some "Day 8");
   (Tccday11.slide, Some "Day 11");
+  (Tccday12.slide, Some "Day 12");
   (Scrollerslide.generate_slide "Tiny Code Chrismas: Extra", None);
   (Tccday2extra.slide, Some "Day 2 extra");
   (Tccday3extra.slide, Some "Day 3 extra");
   (Tccday8extra.slide, Some "Day 8 extra");
   (Scrollerslide.generate_slide "Genuary 2024", None);
   (Prompts.slide, None);
+  (Quote.slide, None);
+  (Image.generate_slide "/Users/michael/Desktop/claudius.pcx", None);
   (Textslide.generate_slide Textslide.claudius_slide, None);
   (Textslide.generate_slide Textslide.primatives_slide, None);
   (Genuary1.slide, Some "1: Particals");
