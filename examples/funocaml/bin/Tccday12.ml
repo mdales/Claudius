@@ -86,12 +86,20 @@ let tick t s _p _i =
   Array.sort point_cmp points;
 
   let m = 200. in
-  Array.iter (fun e ->
-    Framebuffer.filled_circle
-      ((w / 2) + int_of_float (m *. e.x /. (e.z +. 400.)))
-      ((h / 2) - int_of_float (m *. e.y /. (e.z +. 400.)))
-      (((200. /. ((e.z +. 500.) /. 10.)))) e.c fb
-  ) points;
+
+  let rec loop idx rest =
+    match (idx == (Array.length points)) with
+    | true -> rest
+    | false -> (
+      let e = points.(idx) in
+      Primitives.FilledCircle (
+        {x = ((w / 2) + int_of_float (m *. e.x /. (e.z +. 400.))) ; y = ((h / 2) - int_of_float (m *. e.y /. (e.z +. 400.)))},
+        (((200. /. ((e.z +. 500.) /. 10.)))),
+        e.c
+      ) :: loop (idx + 1) rest
+    )
+  in
+  loop 0 [] |> Framebuffer.render fb;
   fb
 
 

@@ -11,7 +11,7 @@ let author_font = Result.get_ok (
 )
 
 let tick t s _p _i =
-  let _w, h = Screen.dimensions s in
+  let w, h = Screen.dimensions s in
   let palsize = (Palette.size (Screen.palette s) - 1) in
 
   (* let fb = Framebuffer.init (w, h) (fun _ _ -> ((t / 100) mod 16)) in*)
@@ -30,8 +30,12 @@ let tick t s _p _i =
       (if rc >= 0 then rc else (rc + palsize)) + 1
   ) in
 
-  let w = Textslide.draw_string 20 (h / 2) prose_font prose 0 fb in
-  ignore(Textslide.draw_string (w - 50) ((h / 2) + 20) author_font author 0 fb);
+  let quote_width = Textslide.string_length prose_font prose
+  and author_width = Textslide.string_length author_font author in
+  let quote_offset = (w - quote_width) / 2 in
+  let author_offset = (w - (quote_offset + author_width)) in
+  ignore(Textslide.draw_string quote_offset (h / 2) prose_font prose 0 fb);
+  ignore(Textslide.draw_string author_offset ((h / 2) + 20) author_font author 0 fb);
   fb
 
 

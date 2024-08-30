@@ -61,7 +61,7 @@ let primatives_slide = [
 ]
 
 let tcc1_lua_example = [
-  "Day 1 code in Lua";
+  "Day 2 code in Lua";
   "";
   "w=240";
   "h=136";
@@ -101,7 +101,7 @@ let tcc1_lua_example = [
   "  tri((w/2), 5, (w/2)-7, 15, (w/2)+7, 15, 3 + ((t/20)%2))";
   "  tri((w/2), 20, (w/2)-7, 10, (w/2)+7, 10, 3 + ((t/20)%2))";
   "";
-  "  -- stars";
+  "  -- snow";
   "  for i = 1, snow_count do";
   "    x=snow[i][1]";
   "    y=snow[i][2]";
