@@ -2,8 +2,6 @@ open Claudius
 
 let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t -> Framebuffer.t -> Base.KeyCodeSet.t -> Framebuffer.t)) * string option) list = [
 
-  (Code.generate_slide "../tcc22/day1.lua" 7, None);
-
   (Textslide.generate_slide Textslide.opening, None);
 
   (Scrollerslide.generate_slide "Tiny Code Chrismas 2022", None);
@@ -12,10 +10,10 @@ let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t 
 
   (Scrollerslide.generate_slide "Tiny Code Chrismas 2023", None);
   (Tccday2.slide, Some "Day 1");
-  (Textslide.generate_slide Textslide.tcc1_lua_example, None);
-  (Textslide.generate_slide Textslide.tcc1_code_example, None);
+  (Code.generate_slide "../tcc22/day1.lua" 7, None);
+  (Code.generate_slide "../tcc23/day1/bin/main.ml" 0, None);
   (Tccday5.slide, Some "Day 5");
-  (Textslide.generate_slide Textslide.tcc5_code_example, None);
+  (Code.generate_slide "../tcc23/day5/bin/main.ml" 30, None);
   (Tccday8.slide, Some "Day 8");
   (Tccday11.slide, Some "Day 11");
   (Tccday12.slide, Some "Day 12");
@@ -24,6 +22,8 @@ let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t 
   (Tccday2extra.slide, Some "Day 2 extra");
   (Tccday3extra.slide, Some "Day 3 extra");
   (Tccday8extra.slide, Some "Day 8 extra");
+  (Code.generate_slide "../tcc23/day8extra/bin/main.ml" 81, None);
+
 
   (Image.generate_slide "/Users/michael/Desktop/claudius.pcx", None);
   (Image.generate_slide "/Users/michael/Desktop/flitter.pcx", None);
@@ -33,9 +33,9 @@ let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t 
   (Scrollerslide.generate_slide "Genuary 2024", None);
   (Prompts.slide, None);
   (Genuary2.slide, Some "No Palette");
-  (Textslide.generate_slide Textslide.genuary2_code_example, None);
+  (Code.generate_slide "examples/day2/bin/main.ml" 0, None);
   (Genuary1.slide, Some "Particals");
-  (Textslide.generate_slide Textslide.genuary1_code_example, None);
+  (Code.generate_slide "examples/day1/bin/main.ml" 100, None);
   (Genuary6.slide, Some "Screen saver");
   (* (Textslide.generate_slide Textslide.genuary6_code_example, None);*)
   (Textslide.generate_slide Textslide.primatives_slide, None);

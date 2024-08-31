@@ -2,15 +2,20 @@ open Claudius
 open Bdfparser
 
 let ocaml_keywords = [
+  "open";
   "let";
   "ref";
   "in";
   "for";
   "do";
   "done";
+  "done;";
   "if";
   "then";
-
+  "and";
+  "match";
+  "with";
+  "exception";
 ]
 
 let lua_keywords = [
@@ -55,7 +60,11 @@ let draw_string x y font s keywords fb =
     | x -> (
       match List.exists (fun k -> String.compare k w == 0) keywords with
       | true -> 3
-      | false -> x
+      | false -> (
+        match int_of_string_opt w with
+        | None -> x
+        | Some _ -> 11
+      )
     ) in
     offset + (Textslide.draw_string offset y font w c fb) + space_width
   ) x words
@@ -78,6 +87,12 @@ let tick title_font body_font heading code keywords _t s _fb i =
 
   let palsize = Palette.size (Screen.palette s) in
 
+
+
+  List.iteri (fun i s ->
+    ignore(draw_string inset ((i + 2 - !offset) * 17) body_font s keywords fb)
+  ) code;
+
   let step = h / palsize in
   List.init palsize (fun i ->
     Primitives.FilledRect(
@@ -88,12 +103,8 @@ let tick title_font body_font heading code keywords _t s _fb i =
   )
   |> Framebuffer.render fb;
 
-  List.iteri (fun i s ->
-    ignore(draw_string inset ((i + 1 - !offset) * 17) body_font s keywords fb)
-  ) code;
-
-  Framebuffer.filled_rect 0 0 w 18 0 fb;
-  ignore(Textslide.draw_string inset 17 title_font heading 12 fb);
+  Framebuffer.filled_rect 0 0 (w - 16) 18 0 fb;
+  ignore(Textslide.draw_string inset 17 title_font (Printf.sprintf "%s : %d" heading !offset) 12 fb);
 
   fb
 
@@ -104,7 +115,8 @@ let generate_slide filename initial_offset =
   in
 
   let fname = Fpath.of_string filename |> Result.get_ok in
-  let basename = Fpath.basename fname
+  let cwd = Fpath.of_string (Sys.getcwd ()) |> Result.get_ok in
+  let basename = Fpath.normalize (Fpath.append cwd fname ) |> Fpath.to_string
   and ext = Fpath.get_ext fname in
 
   let keywords = match ext with
