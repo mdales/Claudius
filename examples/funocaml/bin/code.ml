@@ -74,20 +74,21 @@ let tick title_font body_font heading code keywords _t s _fb i =
   let w, h = Screen.dimensions s in
 
   let i_list = Base.KeyCodeSet.to_list i in
+  let shift = List.exists (fun x -> (x == 0x400000e1) || (x == 0x400000e5)) i_list in
+  let i_list = List.filter (fun x -> (x != 0x400000e1) && (x != 0x400000e5)) i_list in
+
   let updated_offset = match !debounce, i_list with
-  | [0x00000020], [] -> (!offset) + 1
-  | [0x40000051], [] -> (!offset) + 1
-  | [0x40000052], [] -> (!offset) - 1
+  | [0x00000020], [] -> (!offset) + (if shift then 10 else 1)
+  | [0x40000051], [] -> (!offset) + (if shift then 10 else 1)
+  | [0x40000052], [] -> (!offset) - (if shift then 10 else 1)
   | _ -> !offset
   in
-  offset := updated_offset;
+  offset := if (updated_offset >= 0) then updated_offset else 0;
   debounce := i_list;
 
   let fb = Framebuffer.init (w, h) (fun _x _y ->  0) in
 
   let palsize = Palette.size (Screen.palette s) in
-
-
 
   List.iteri (fun i s ->
     ignore(draw_string inset ((i + 2 - !offset) * 17) body_font s keywords fb)
