@@ -2,6 +2,7 @@ open Claudius
 
 let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t -> Framebuffer.t -> Base.KeyCodeSet.t -> Framebuffer.t)) * string option) list = [
 
+  (Code.generate_slide "../tcc22/day1.lua" 7, None);
 
   (Textslide.generate_slide Textslide.opening, None);
 

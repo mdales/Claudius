@@ -433,7 +433,6 @@ let tick title_font body_font prose _t s _fb i =
     | 0 -> title_font
     | _ -> body_font in
 
-    let _width = string_length font s in
     let inset = 5 in
 
     let trimmed = String.trim s in
