@@ -94,18 +94,19 @@ let tick title_font body_font heading code keywords _t s _fb i =
     ignore(draw_string inset ((i + 2 - !offset) * 17) body_font s keywords fb)
   ) code;
 
-  let step = h / palsize in
-  List.init palsize (fun i ->
-    Primitives.FilledRect(
-      {x = w - 16 ; y = step * i},
-      {x = w - 1; y = (step * (i + 1))},
-      (palsize - (i + 1))
-    )
-  )
-  |> Framebuffer.render fb;
 
-  Framebuffer.filled_rect 0 0 (w - 16) 18 0 fb;
+  Framebuffer.filled_rect 0 0 w 18 0 fb;
   ignore(Textslide.draw_string inset 17 title_font (Printf.sprintf "%s : %d" heading !offset) 12 fb);
+
+  let step = h / palsize in
+    List.init palsize (fun i ->
+      Primitives.FilledRect(
+        {x = w - 16 ; y = step * i},
+        {x = w - 1; y = (step * (i + 1))},
+        (palsize - (i + 1))
+      )
+    )
+    |> Framebuffer.render fb;
 
   fb
 

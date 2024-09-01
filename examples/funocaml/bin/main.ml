@@ -5,11 +5,12 @@ let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t 
 
   (Textslide.generate_slide Textslide.opening, None);
 
+  (Quote.generate_slide Quote.wells_quote, None);
+
   (Scrollerslide.generate_slide "Tiny Code Chrismas 2022", None);
   (Image.generate_slide "examples/funocaml/resources/tic80code.pcx", None);
   (Tic80hello.generate_slide (), None);
 
-  (Quote.generate_slide Quote.wells_quote, None);
 
   (Scrollerslide.generate_slide "Tiny Code Chrismas 2023", None);
   (Tccday2.slide, Some "Day 1");
@@ -29,8 +30,9 @@ let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t 
 
 
   (Image.generate_slide "/Users/michael/Desktop/claudius.pcx", None);
-  (Image.generate_slide "/Users/michael/Desktop/flitter.pcx", None);
+  (Image.generate_slide "examples/funocaml/resources/flitter.pcx", None);
   (Textslide.generate_slide Textslide.claudius_slide, None);
+
   (Quote.generate_slide Quote.lynch_quote, None);
 
   (Scrollerslide.generate_slide "Genuary 2024", None);
