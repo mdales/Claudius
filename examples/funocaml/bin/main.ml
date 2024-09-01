@@ -2,10 +2,13 @@ open Claudius
 
 let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t -> Framebuffer.t -> Base.KeyCodeSet.t -> Framebuffer.t)) * string option) list = [
 
+
   (Textslide.generate_slide Textslide.opening, None);
 
   (Scrollerslide.generate_slide "Tiny Code Chrismas 2022", None);
-  (Image.generate_slide "/Users/michael/Desktop/tic80.pcx", None);
+  (Image.generate_slide "examples/funocaml/resources/tic80code.pcx", None);
+  (Tic80hello.generate_slide (), None);
+
   (Quote.generate_slide Quote.wells_quote, None);
 
   (Scrollerslide.generate_slide "Tiny Code Chrismas 2023", None);
