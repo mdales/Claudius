@@ -16,7 +16,7 @@ let (>|=) v f = Result.map f v
 
 let sdl_init (width : int) (height : int) (title : string) =
   Sdl.init Sdl.Init.(video + events) >>= fun () ->
-  Sdl.create_window ~w:width ~h:height title Sdl.Window.opengl >>= fun w ->
+  Sdl.create_window ~w:width ~h:height title Sdl.Window.(opengl) >>= fun w ->
   Sdl.create_renderer ~flags:Sdl.Renderer.(accelerated + presentvsync) w >|=
   fun r -> (w, r)
 
@@ -31,10 +31,13 @@ let framebuffer_to_bigarray (s : Screen.t) (buffer : Framebuffer.t) (bitmap : bi
   ) (Framebuffer.to_array buffer)
 
 let render_texture (r : Sdl.renderer) (texture : Sdl.texture) (s : Screen.t) (bitmap : bitmap_t) =
-  let width, _ = Screen.dimensions s in
+  let width, height = Screen.dimensions s in
+  let scale = Screen.scale s in
   Sdl.render_clear r >>= fun () ->
   Sdl.update_texture texture None bitmap width >>= fun () ->
-  Sdl.render_copy r texture >|= fun () ->
+  let ow, oh = Result.get_ok (Sdl.get_renderer_output_size r) in
+  let dst = Sdl.Rect.create ~x:((ow - (width * scale)) / 2) ~y:((oh - (height * scale)) / 2) ~w:(width * scale) ~h:(height * scale) in
+  Sdl.render_copy ~dst:dst r texture >|= fun () ->
   Sdl.render_present r
 
 (* ----- *)
