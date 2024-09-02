@@ -7,12 +7,12 @@ let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t 
 
   (Quote.generate_slide Quote.wells_quote, None);
 
-  (Scrollerslide.generate_slide "Tiny Code Chrismas 2022", None);
+  (Scrollerslide.generate_slide "TIC-80 and friends", None);
   (Image.generate_slide "examples/funocaml/resources/tic80code.pcx", None);
   (Tic80hello.generate_slide (), None);
 
 
-  (Scrollerslide.generate_slide "Tiny Code Chrismas 2023", None);
+  (Scrollerslide.generate_slide "Tiny Code Chrismas", None);
   (Tccday2.slide, Some "Day 1");
   (Code.generate_slide "../tcc22/day1.lua" 7, None);
   (Code.generate_slide "../tcc23/day1/bin/main.ml" 0, None);
@@ -43,7 +43,7 @@ let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t 
   (Code.generate_slide "examples/day1/bin/main.ml" 100, None);
   (Genuary6.slide, Some "Screen saver");
   (* (Textslide.generate_slide Textslide.genuary6_code_example, None);*)
-  (Textslide.generate_slide Textslide.primatives_slide, None);
+  (Code.generate_slide "claudius/primitives.mli" 0, None);
   (Genuary17.slide, Some "Islamic Patterns");
   (Genuary17filled.slide, Some "Islamic Patterns");
   (Genuary20.slide, Some "Generative Typography and 8x8");
