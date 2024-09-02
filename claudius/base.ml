@@ -15,8 +15,10 @@ let (>>=) = Result.bind
 let (>|=) v f = Result.map f v
 
 let sdl_init (width : int) (height : int) (title : string) =
+  let make_full = Array.to_list Sys.argv |> List.exists (fun a -> (String.compare a "-f") == 0) in
+
   Sdl.init Sdl.Init.(video + events) >>= fun () ->
-  Sdl.create_window ~w:width ~h:height title Sdl.Window.(opengl) >>= fun w ->
+  Sdl.create_window ~w:width ~h:height title Sdl.Window.(if make_full then fullscreen else windowed) >>= fun w ->
   Sdl.create_renderer ~flags:Sdl.Renderer.(accelerated + presentvsync) w >|=
   fun r -> (w, r)
 
