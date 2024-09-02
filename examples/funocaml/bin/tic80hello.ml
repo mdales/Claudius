@@ -4,10 +4,10 @@ open Pcxlib
 let palette =  Palette.load_tic80_palette "000:1a1c2c5d275db13e53ef7d57ffcd75a7f07038b76425717929366f3b5dc941a6f673eff7f4f4f494b0c2566c86333c57"
 
 let tick sprite t s _p _i =
-  let sw, sh = 320, 240 in
+  let sw, sh = 240, 136 in
   let w, h = Pcx.dimensions sprite in
   let xoff = (sw - (w * 1)) / 2
-  and yoff = ((sh - (h * 1)) / 2) - 25 in
+  and yoff = ((sh - (h * 1)) / 2) - 15 in
 
   let sfb = Framebuffer.init (sw, sh) (fun _ _ -> 13) in
 
@@ -25,15 +25,18 @@ let tick sprite t s _p _i =
     done
   done ;
 
-  if ((t / 90) mod 2) == 1 then Framebuffer.filled_rect 142 (yoff + 20) 24 3 12 sfb;
+  if ((t / 90) mod 2) == 1 then Framebuffer.filled_rect ((sw / 2) - 16) (yoff + 20) 24 3 12 sfb;
 
   let font = Option.get (Screen.font s) in
-  ignore(Framebuffer.draw_string 100 140 font "HELLO WORLD!" 12 sfb);
+  ignore(Framebuffer.draw_string 60 90 font "HELLO WORLD!" 12 sfb);
 
-  Framebuffer.init (Screen.dimensions s) (fun x y ->
-    match Framebuffer.pixel_read (x / 2) (y / 2) sfb with
+  let screen_w, screen_h = Screen.dimensions s in
+  let xoff = (screen_w - (sw * 2)) / 2
+  and yoff = (screen_h - (sh * 2)) / 2 in
+  Framebuffer.init (screen_w, screen_h) (fun x y ->
+    match Framebuffer.pixel_read ((x - xoff) / 2) ((y - yoff) / 2) sfb with
     | None -> 0
-    | Some x -> x
+    | Some v -> v
   )
 
 
