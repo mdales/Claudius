@@ -6,7 +6,7 @@ let opening = [
   "Fun OCaml 2024";
   "";
   "Michael Dales";
-  "michael@digitalflapjack.com";
+  "@michael@mynameismwd.org";
 ]
 
 let claudius_slide = [

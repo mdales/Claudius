@@ -10,9 +10,6 @@ let lynch_quote = (
   "David Lynch"
 )
 
-(* let prose = "\"The enemy of art is the absence of limitations.\""
-let author = "Orson Wells"*)
-
 let prose_font = Result.get_ok (
   Bdfparser.Bdf.create "/Users/michael/dev/classic-mac-fonts/bdf/Geneva-24.bdf"
 )
