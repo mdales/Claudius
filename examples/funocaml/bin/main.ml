@@ -8,7 +8,7 @@ let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t 
   (Quote.generate_slide Quote.wells_quote, None);
 
   (Scrollerslide.generate_slide "TIC-80 and friends", None);
-  (Image.generate_slide "examples/funocaml/resources/tic80code.pcx", None);
+  (Image.generate_slide "examples/funocaml/resources/smalldemo.gif", None);
   (Tic80hello.generate_slide (), None);
 
 
@@ -29,8 +29,8 @@ let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t 
   (Code.generate_slide "../tcc23/day8extra/bin/main.ml" 81, None);
 
 
-  (Image.generate_slide "/Users/michael/Desktop/claudius.pcx", None);
-  (Image.generate_slide "examples/funocaml/resources/flitter.pcx", None);
+  (Image.generate_slide "/Users/michael/Desktop/claudius.gif", None);
+  (Image.generate_slide "examples/funocaml/resources/flitter.gif", None);
   (Textslide.generate_slide Textslide.claudius_slide, None);
 
   (Quote.generate_slide Quote.lynch_quote, None);

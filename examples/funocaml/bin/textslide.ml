@@ -49,7 +49,7 @@ let summary_slide = [
   "* https://github.com/mdales/tcc23";
   "* https://github.com/mdales/claudius";
   "* https://github.com/mdales/bdfparser";
-  "* https://github.com/mdales/pcxlib";
+  "* https://github.com/mdales/ocaml-gif";
   "";
   "Related cool stuff";
   "https://tcc.lovebyte.party";

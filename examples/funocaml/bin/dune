@@ -1,4 +1,4 @@
 (executable
  (public_name funocaml)
  (name main)
- (libraries funocaml claudius bdfparser pcxlib hooke unix fpath))
+ (libraries funocaml claudius bdfparser hooke unix fpath giflib))

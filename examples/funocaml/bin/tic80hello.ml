@@ -1,23 +1,25 @@
 open Claudius
-open Pcxlib
+open Giflib
 
 let palette =  Palette.load_tic80_palette "000:1a1c2c5d275db13e53ef7d57ffcd75a7f07038b76425717929366f3b5dc941a6f673eff7f4f4f494b0c2566c86333c57"
 
-let tick sprite t s _p _i =
+let tick (sprite : Image.t) t s _p _i =
   let sw, sh = 240, 136 in
-  let w, h = Pcx.dimensions sprite in
+  let w, h = Image.dimensions sprite in
   let xoff = (sw - (w * 1)) / 2
   and yoff = ((sh - (h * 1)) / 2) - 15 in
 
   let sfb = Framebuffer.init (sw, sh) (fun _ _ -> 13) in
 
+  let pixels = Image.pixels sprite in
   for x = 0 to (w - 1) do
     for y = 0 to (h - 1) do
-          let v = Pcx.read_pixel sprite x y in
+      let v = pixels.(x +  (y *w)) in
           let col = match v with
             | 2 -> 0
             | 3 -> 9
             | 4 -> 10
+            | 5 -> 12
             | 6 -> 12
             | _ -> 13
           in
@@ -41,6 +43,9 @@ let tick sprite t s _p _i =
 
 
 let generate_slide () =
-  let sprite = Result.get_ok (Pcx.load "examples/funocaml/resources/tic80-sprite.pcx") in
+  (* let sprite = Result.get_ok (Pcx.load "examples/funocaml/resources/tic80-sprite.pcx") in*)
+  let sprite_file = GIF.from_file "examples/funocaml/resources/tic80-sprite.gif" in
+  let sprite = GIF.get_image sprite_file 0 in
+
 
   (palette, None, tick sprite)
