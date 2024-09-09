@@ -9,7 +9,7 @@ let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t 
 
   (Scrollerslide.generate_slide "TIC-80 and friends", None);
   (Image.generate_slide "examples/funocaml/resources/smalldemo.gif", None);
-  (Tic80hello.generate_slide (), None);
+  (* (Tic80hello.generate_slide (), None);*)
 
 
   (Scrollerslide.generate_slide "Tiny Code Chrismas", None);
@@ -29,14 +29,14 @@ let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t 
   (Code.generate_slide "../tcc23/day8extra/bin/main.ml" 81, None);
 
 
-  (Image.generate_slide "/Users/michael/Desktop/claudius.gif", None);
   (Image.generate_slide "examples/funocaml/resources/flitter.gif", None);
+  (Image.generate_slide "/Users/michael/Desktop/claudius.gif", None);
+  (Scrollerslide.generate_slide "Genuary 2024", None);
+  (Prompts.slide, None);
   (Textslide.generate_slide Textslide.claudius_slide, None);
 
   (Quote.generate_slide Quote.lynch_quote, None);
 
-  (Scrollerslide.generate_slide "Genuary 2024", None);
-  (Prompts.slide, None);
   (Genuary2.slide, Some "No Palette");
   (Code.generate_slide "examples/day2/bin/main.ml" 0, None);
   (Genuary1.slide, Some "Particals");

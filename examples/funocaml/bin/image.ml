@@ -2,11 +2,11 @@ open Claudius
 open Giflib
 
 let tick gif palette_offsets t s p _i =
-  if (t mod 10) == 0 then (
+  if (t mod 5) == 0 then (
     let c = GIF.image_count gif in
-    let i = GIF.get_image gif ((t / 10) mod c) in
+    let i = GIF.get_image gif ((t / 5) mod c) in
 
-    let po = palette_offsets.((t / 10) mod c) in
+    let po = palette_offsets.((t / 5) mod c) in
 
     let sw, sh = Screen.dimensions s
     and gw, gh = GIF.dimensions gif
@@ -47,5 +47,4 @@ let generate_slide filename =
   for idx = 1 to (frames - 1) do
     palette_offset.(idx) <- palette_offset.(idx - 1) + (List.length palettes.(idx - 1))
   done;
-
   (palette, None, tick gif palette_offset)

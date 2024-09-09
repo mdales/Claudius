@@ -45,6 +45,10 @@ let summary_slide = [
   "* Should not have added imperative interface - encourages me to be lazy";
   "* Claudius doesn't really work except as a game in my own mind";
   "";
+  "Next steps";
+  "* Get ready for others for TCC24";
+  "* llama integration for audio?";
+  "";
   "Code";
   "* https://github.com/mdales/tcc23";
   "* https://github.com/mdales/claudius";
