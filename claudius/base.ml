@@ -14,11 +14,9 @@ type bitmap_t = (int32, Bigarray.int32_elt, Bigarray.c_layout) Bigarray.Array1.t
 let (>>=) = Result.bind
 let (>|=) v f = Result.map f v
 
-let sdl_init (width : int) (height : int) (title : string) =
-  let make_full = Array.to_list Sys.argv |> List.exists (fun a -> (String.compare a "-f") == 0) in
-
+let sdl_init (width : int) (height : int) (title : string) (make_fullscreen : bool) =
   Sdl.init Sdl.Init.(video + events) >>= fun () ->
-  Sdl.create_window ~w:width ~h:height title Sdl.Window.(if make_full then fullscreen else windowed) >>= fun w ->
+  Sdl.create_window ~w:width ~h:height title Sdl.Window.(if make_fullscreen then fullscreen else windowed) >>= fun w ->
   Sdl.create_renderer ~flags:Sdl.Renderer.(accelerated + presentvsync) w >|=
   fun r -> (w, r)
 
@@ -45,10 +43,23 @@ let render_texture (r : Sdl.renderer) (texture : Sdl.texture) (s : Screen.t) (bi
 (* ----- *)
 
 let run (title : string) (boot : boot_func option) (tick : tick_func) (s : Screen.t) =
+  let make_full = Array.to_list Sys.argv |> List.exists (fun a -> (String.compare a "-f") == 0) in
+
+  let s = match make_full with
+  | false -> s
+  | true -> (
+    let w, h = Screen.dimensions s
+    and p = Screen.palette s in
+    match (Screen.font s) with
+    | None -> Screen.create w h 1 p
+    | Some f -> Screen.create_with_font w h 1 f p
+  )
+  in
+
   let width, height = Screen.dimensions s
   and scale = Screen.scale s in
 
-  match sdl_init (width * scale) (height * scale) title with
+  match sdl_init (width * scale) (height * scale) title make_full with
   | Error (`Msg e) -> Sdl.log "Init error: %s" e; exit 1
   | Ok (w, r) ->
     match Sdl.create_texture r Sdl.Pixel.format_rgb888 ~w:width ~h:height Sdl.Texture.access_streaming with
