@@ -2,15 +2,13 @@ open Claudius
 
 let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t -> Framebuffer.t -> Base.KeyCodeSet.t -> Framebuffer.t)) * string option) list = [
 
+  (Title.slide, None);
 
-  (Textslide.generate_slide Textslide.opening, None);
-
-  (Quote.generate_slide Quote.wells_quote, None);
 
   (Scrollerslide.generate_slide "TIC-80 and friends", None);
   (Image.generate_slide "examples/funocaml/resources/smalldemo.gif", None);
-  (* (Tic80hello.generate_slide (), None);*)
 
+  (Quote.generate_slide Quote.wells_quote, None);
 
   (Scrollerslide.generate_slide "Tiny Code Chrismas", None);
   (Tccday2.slide, Some "Day 1");
@@ -30,7 +28,7 @@ let slides: ((Palette.t * (Screen.t -> Framebuffer.t) option * (int -> Screen.t 
 
 
   (Image.generate_slide "examples/funocaml/resources/flitter.gif", None);
-  (Image.generate_slide "/Users/michael/Desktop/claudius.gif", None);
+  (Image.generate_slide "examples/funocaml/resources/claudius.gif", None);
   (Scrollerslide.generate_slide "Genuary 2024", None);
   (Prompts.slide, None);
   (Textslide.generate_slide Textslide.claudius_slide, None);
