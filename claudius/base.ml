@@ -17,8 +17,8 @@ let (>|=) v f = Result.map f v
 let sdl_init (width : int) (height : int) (title : string) (make_fullscreen : bool) =
   Sdl.init Sdl.Init.(video + events) >>= fun () ->
   Sdl.create_window ~w:width ~h:height title Sdl.Window.(if make_fullscreen then fullscreen else windowed) >>= fun w ->
-  Sdl.create_renderer ~flags:Sdl.Renderer.(accelerated + presentvsync) w >|=
-  fun r -> (w, r)
+  Sdl.create_renderer ~flags:Sdl.Renderer.(accelerated + presentvsync) w >>= fun r ->
+  Sdl.show_cursor (not make_fullscreen) >|= fun _ -> (w, r)
 
 let framebuffer_to_bigarray (s : Screen.t) (buffer : Framebuffer.t) (bitmap : bitmap_t) =
   let palette = Screen.palette s in
