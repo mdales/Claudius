@@ -20,7 +20,7 @@ This function is called once, and at its minimum is used to set an initial scree
 
 the `tick` function is mandator, and will be called once per frame redraw by Claudius. This will be where you either generate a new set of screen contents of you can modify the old screen contents and provide that back to Claudius. The tick function will be provided with a monotomically incrementing counter `t` that can be used to derive a particular frame update.
 
-## Styles of working with Claudius.
+## Styles of working with Claudius
 
 To support this there's three primary modes of working with Claudius for generating visual effects and demos:
 
@@ -28,7 +28,7 @@ To support this there's three primary modes of working with Claudius for generat
 - Screen functional
 - Imperative
 
-## Pixel Functional
+### Pixel Functional
 
 Often visual effects can be encoded as "pixel functional" - that is to draw the screen you just need to provide a function that takes the `x` and `y` coordinate of the pixel and then generates it's value. A classic example of this would be a [Mandelbrot Fractal](https://en.wikipedia.org/wiki/Mandelbrot_set). To encourage this, the most common way to generate a blank canvas in Claudius is:
 
@@ -46,15 +46,52 @@ let faded_fb = Framebuffer.shader (fun pixel -> if pixel > 1 then (pixel - 1) el
 
 Done too much this can be expensive in memory allocations, and so there is also a `shader_inplace` variation that does an update on the provided framebuffer - this is less functional, but is sometimes a pragmatic compromise based on performance.
 
-## Screen Functional
+### Screen Functional
 
-Whilst pixel functional effects can be fun, they can also be quite limiting, and often you will want to build up bigger scenes to be rendered at once. For this we encourage this style of processing.
+Whilst pixel functional effects can be fun, they can also be quite limiting, and often you will want to build up bigger scenes to be rendered at once. For this we encourage a functional pipeline style of processing, which we refer to as "Screen Functional" - each frame is a function of time t. To support this Claudius has a primatives library, whereby you can render objects to a framebuffer:
+
+```ocaml
+let w, h = Screen.dimensions s in
+let palsize = Palette.size (Screen.palette s) in
+
+(* generate some points *)
+List.init 42 (fun _ -> (Random.int w, Random.int h))
+(* Convert those circle primatives in different colours *)
+|> List.mapi (fun idx (x, y) -> Primitive.Circle ({x ; y } ; 3.0 ; idx mod palsize))
+(* Draw to framebuffer *)
+|> Framebuffer.render fb
+```
+
+More complicated examples for say a 3D-style pipeline you often end up writing pipelines that look like:
+
+```ocaml
+(* generate some points for the model *)
+generate_model_points ()
+(* Advance the model by time t *)
+|> update_points t
+(* Convert points to 2D *)
+|> project_points
+(* Convert to primatives *)
+|> convert_to_primatives
+(* Finally render to framebuffer *)
+|> Framebuffer.render fb
+```
+
+You can see an example of this in practice in [example/day1](/example/day1/bin/main.ml).
+
+### Imperative
+
+Finally, if you just want to get some shapes on screen, then all primatives can be directly rendered to a framebuffer like so:
+
+```ocaml
+Framebuffer.draw_line x0 y0 x1 y1 col buffer
+```
 
 ## The framebuffer
 
 # Screen modes
 
-Claudius isn't as restrictive as a dedicated fantasy console, which typically offers one or a few dedicated modes (e.g., 240x180x16 for TIC-80), but rather you specify a screen as having a resolution and palette of your choosing. Currently palettes are only configurate at start-of-day, and not yet modifiable whilst an effect is running, but the ability to have palettes of arbitary sizes does offset this limitation somewhat.
+Claudius isn't as restrictive as a dedicated fantasy console, which typically offers one or a few dedicated modes (e.g., 240x136x16 for TIC-80), but rather you specify a screen as having a resolution and palette of your choosing. Currently palettes are only configurate at start-of-day, and not yet modifiable whilst an effect is running, but the ability to have palettes of arbitary sizes does offset this limitation somewhat.
 
 ## Palettes
 
@@ -99,5 +136,3 @@ open Claudius
 
 let s = Screen.create 320 200 3 (Palette.generate_plasma_palette 256)
 ```
-
-## Define your
