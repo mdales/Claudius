@@ -123,7 +123,7 @@ let p = Palette.of_list [0x000000 ; 0xFF0000; 0x00FF00; 0x0000FF ; 0xFFFFFF]
 
 Once you have a colour palette defined, you can now create the screen mode you want:
 
-```
+```ocaml
 open Claudius
 
 let s = Screen.create 640 480 1 (Palette.generate_mono_palette 16)
@@ -131,7 +131,7 @@ let s = Screen.create 640 480 1 (Palette.generate_mono_palette 16)
 
 The first two arguments are the width and height of the emulated screen mode, and final argument is the palette. The third argument is a scaling factor when displayed; if you're trying to work at resolutions like 320x200 (old-school VGA 256 colour), then things can get quite small on modern displays, so you might want to bump that up a bit, for example making it display at three times the size:
 
-```
+```ocaml
 open Claudius
 
 let s = Screen.create 320 200 3 (Palette.generate_plasma_palette 256)
