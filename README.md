@@ -91,11 +91,19 @@ Framebuffer.draw_line x0 y0 x1 y1 col buffer
 
 # Screen modes
 
-Claudius isn't as restrictive as a dedicated fantasy console, which typically offers one or a few dedicated modes (e.g., 240x136x16 for TIC-80), but rather you specify a screen as having a resolution and palette of your choosing. Currently palettes are only configurate at start-of-day, and not yet modifiable whilst an effect is running, but the ability to have palettes of arbitary sizes does offset this limitation somewhat.
+Claudius isn't as restrictive as a dedicated fantasy console, which typically offers one or a few dedicated modes (e.g., 240x180x16 for TIC-80), but rather you specify a screen as having a resolution and palette of your choosing. Currently palettes are only configurate at start-of-day, and not yet modifiable whilst an effect is running, but the ability to have palettes of arbitary sizes does offset this limitation somewhat, but is probably something that will be addressed in a future release.
 
 ## Palettes
 
-You can create a 256 entry monochromatic palette like so:
+Palettes are defined as sets of 24bit red, green, blue values. You can thus create a 5 entry palette of black, red, green, blue, white by doing the following:
+
+```ocaml
+open Claudius
+
+let p = Palette.of_list [0x000000 ; 0xFF0000; 0x00FF00; 0x0000FF ; 0xFFFFFF]
+```
+
+To assist with some common fancy palettes, there are some helper functions that will save you some code. For instance, you can create a 256 entry monochromatic palette like so:
 
 ```ocaml
 open Claudius
@@ -111,12 +119,15 @@ open Claudius
 let p = Palette.generate_plasma_palette 16
 ```
 
-For other palettes, you can simply provide a list of 24bit colour values as integers:
+You can also turn a palette back into a list of integers, to say create a palette that has black and white and 14 plasma colours:
 
 ```ocaml
 open Claudius
 
-let p = Palette.of_list [0x000000 ; 0xFF0000; 0x00FF00; 0x0000FF ; 0xFFFFFF]
+let = p Palette.generate_plasma_palette 14
+|> Palette.to_list
+|> List.concat [0x000000;0xFFFFFF]
+|> Palette.of_list
 ```
 
 ## Screens
