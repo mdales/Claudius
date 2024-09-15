@@ -30,7 +30,7 @@ let draw_circle (x : int) (y : int) (r : float) (col : int) (buffer : t) =
   let fx = Float.of_int x
   and fy = Float.of_int y in
 
-  for yo = 0 to (Int.of_float (r *. sin (Float.pi *. 0.25))) do 
+  for yo = 0 to (Int.of_float (r *. sin (Float.pi *. 0.25))) do
     let yi = y + yo in
     let a = acos ((Float.of_int (yi - y)) /. r) in
     let xw = (sin a) *. r in
@@ -219,15 +219,18 @@ let filled_triangle (x0 : int) (y0 : int) (x1 : int) (y1 : int) (x2 : int) (y2 :
 
   let spans = Array.map2 (fun a b -> (a, b)) long_edge other_edge in
   Array.iteri (fun i s ->
-    let row = buffer.(y0 + i) in
-    let stride = Array.length row in
-    let p, q = s in
-    let p0, p1 = if (leftmost p <= leftmost q) then p, q else q, p in
-    let r0, r1 = leftmost p0, rightmost p1 in
-    if ((r1 > 0) && (r0 < (stride - 1))) then (
-      let x0 = if (r0 < 0) then 0 else (if (r0 >= stride) then (stride - 1) else r0)
-      and x1 = if (r1 < 0) then 0 else (if (r1 >= stride) then (stride - 1) else r1) in
-      Array.fill row x0 ((x1 - x0) + 1) col
+    let index = y0 + i in
+    if (index >= 0) && (index < Array.length buffer) then (
+      let row = buffer.(y0 + i) in
+      let stride = Array.length row in
+      let p, q = s in
+      let p0, p1 = if (leftmost p <= leftmost q) then p, q else q, p in
+      let r0, r1 = leftmost p0, rightmost p1 in
+      if ((r1 > 0) && (r0 < (stride - 1))) then (
+        let x0 = if (r0 < 0) then 0 else (if (r0 >= stride) then (stride - 1) else r0)
+        and x1 = if (r1 < 0) then 0 else (if (r1 >= stride) then (stride - 1) else r1) in
+        Array.fill row x0 ((x1 - x0) + 1) col
+      )
     )
   ) spans
 
@@ -250,7 +253,7 @@ let strand_direction (s : strand) : int =
     )
     | x -> x
   ) s 0
-    
+
 
 let poly_to_strands (points : (int * int) list) : strand list =
   match points with
@@ -276,7 +279,7 @@ let poly_to_strands (points : (int * int) list) : strand list =
         let diff = y1 - y0 in
         let direction = if (diff = 0) then 0 else (diff / abs(diff)) in
         if direction == 0 then (
-          loop last_direction (hd :: current_strand) result tl  
+          loop last_direction (hd :: current_strand) result tl
         ) else (
           if (direction == last_direction) then (
             loop direction (hd :: current_strand) result tl
@@ -407,10 +410,10 @@ let draw_char (x : int) (y : int) (f : Font.t) (c : char) (col : int) (buffer : 
           let isbit = (b lsl bit) land 0x80 in
           match isbit with
           | 0 -> ()
-          | _ -> 
-          pixel_write 
+          | _ ->
+          pixel_write
             (x + (w * 8) + bit)
-            (y + h) 
+            (y + h)
             col
             buffer
         done
@@ -418,9 +421,9 @@ let draw_char (x : int) (y : int) (f : Font.t) (c : char) (col : int) (buffer : 
     done; gw
   )
 
-let draw_string (x : int) (y : int) (f : Font.t) (s : string) (col : int) (buffer : t) = 
+let draw_string (x : int) (y : int) (f : Font.t) (s : string) (col : int) (buffer : t) =
   let sl = List.init (String.length s) (String.get s) in
-  let rec loop offset remaining = 
+  let rec loop offset remaining =
     match remaining with
     | [] -> offset
     | c :: remaining -> (
@@ -436,7 +439,7 @@ let shader (f: shader_func) (buffer : t) : t =
     Array.map f row
   ) buffer
 
-let shaderi (f: shaderi_func) (buffer : t) : t = 
+let shaderi (f: shaderi_func) (buffer : t) : t =
   Array.mapi (fun y row ->
     Array.mapi (fun x _p -> f x y buffer) row
   ) buffer
@@ -446,7 +449,7 @@ let shader_inplace (f: shader_func) (buffer : t) =
     Array.map_inplace f row
   ) buffer
 
-let shaderi_inplace (f: shaderi_func) (buffer : t) = 
+let shaderi_inplace (f: shaderi_func) (buffer : t) =
   Array.iteri (fun y row ->
     Array.mapi_inplace (fun x _p -> f x y buffer) row
   ) buffer
