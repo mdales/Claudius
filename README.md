@@ -8,18 +8,6 @@ As mentioned alread, Claudius takes inspiration from existing fantasy console en
 
 One of the main differences is that rather than work with a memory map layout of the virtual computer (e.g., see TIC-80's [docs](https://tic80.com/learn) where it describes the memory layout it uses), Claudius works with a `Framebuffer.t` type, which is an ADT that manages the pixels in a palette based colour space. You can generate new framebuffers when you like, or recycle old ones. By not treating them as memory mapped as in TIC-80, we can encourage a more functional access approach (as described below).
 
-## Tick and Boot
-
-Similar to both TIC-80, and embedded development systems like [Arduino](https://arduino.cc), Claudius programs have two main entry points, functions that you must provide to Claudius: an optional one called `boot` and a mandator one called `tick`.
-
-### Boot
-
-This function is called once, and at its minimum is used to set an initial screen state, though it can also be used by your code to initialise any other state that your program maintains. If you're happy with just a blank screen (using palette entry 0, see screen details below for more on this), then you don't need to provide a `boot` function.
-
-### Tick
-
-the `tick` function is mandator, and will be called once per frame redraw by Claudius. This will be where you either generate a new set of screen contents of you can modify the old screen contents and provide that back to Claudius. The tick function will be provided with a monotomically incrementing counter `t` that can be used to derive a particular frame update.
-
 ## Styles of working with Claudius
 
 To support this there's three primary modes of working with Claudius for generating visual effects and demos:
@@ -88,6 +76,20 @@ Framebuffer.draw_line x0 y0 x1 y1 col buffer
 ```
 
 ## The framebuffer
+
+Claudius is based on the concept of a framebuffer,
+
+## Tick and Boot
+
+Similar to both TIC-80, and embedded development systems like [Arduino](https://arduino.cc), Claudius programs have two main entry points, functions that you must provide to Claudius: an optional one called `boot` and a mandator one called `tick`.
+
+### Boot
+
+This function is called once, and at its minimum is used to set an initial screen state, though it can also be used by your code to initialise any other state that your program maintains. If you're happy with just a blank screen (using palette entry 0, see screen details below for more on this), then you don't need to provide a `boot` function.
+
+### Tick
+
+the `tick` function is mandator, and will be called once per frame redraw by Claudius. This will be where you either generate a new set of screen contents of you can modify the old screen contents and provide that back to Claudius. The tick function will be provided with a monotomically incrementing counter `t` that can be used to derive a particular frame update.
 
 # Screen modes
 
