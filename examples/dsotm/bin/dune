@@ -1,4 +1,0 @@
-(executable
- (public_name dsotm)
- (name main)
- (libraries dsotm claudius))

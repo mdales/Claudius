@@ -1,4 +1,0 @@
-(executable
- (public_name keytest)
- (name main)
- (libraries keytest claudius))

@@ -1,4 +1,0 @@
-(executable
- (public_name kochtoo)
- (name main)
- (libraries kochtoo claudius))

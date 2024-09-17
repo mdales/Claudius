@@ -1,4 +1,0 @@
-(executable
- (public_name tcc5)
- (name main)
- (libraries tcc5 claudius))

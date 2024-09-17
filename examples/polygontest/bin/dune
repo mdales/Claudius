@@ -1,4 +1,0 @@
-(executable
- (public_name polygontest)
- (name main)
- (libraries polygontest claudius))

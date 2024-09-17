@@ -1,4 +1,0 @@
-(executable
- (public_name physics)
- (name main)
- (libraries physics claudius hooke))

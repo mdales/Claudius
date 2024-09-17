@@ -1,4 +1,0 @@
-(executable
- (public_name flocking)
- (name main)
- (libraries flocking claudius))

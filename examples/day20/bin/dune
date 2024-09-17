@@ -1,4 +1,0 @@
-(executable
- (public_name day20)
- (name main)
- (libraries day20 claudius unix))

@@ -1,4 +1,0 @@
-(executable
- (public_name fonts)
- (name main)
- (libraries fonts claudius))
