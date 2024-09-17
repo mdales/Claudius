@@ -76,7 +76,14 @@ let run (title : string) (boot : boot_func option) (tick : tick_func) (s : Scree
 
       let e = Sdl.Event.create () in
 
-      let rec loop (t : int) (prev_buffer : Framebuffer.t) (keys : KeyCodeSet.t) = (
+      let rec loop (t : int) (prev_buffer : Framebuffer.t) (keys : KeyCodeSet.t) last_t = (
+
+        let now = Sdl.get_ticks () in
+        let diff = Int32.(sub (of_int(1000 / 60)) (sub now last_t)) in
+        if Int32.(compare diff zero) > 0 then (
+          Sdl.delay diff
+        );
+
         let updated_buffer = tick t s prev_buffer keys in
 
         framebuffer_to_bigarray s updated_buffer bitmap;
@@ -96,9 +103,10 @@ let run (title : string) (boot : boot_func option) (tick : tick_func) (s : Scree
           | false -> (false, keys) in
           match exit with
           | true -> ()
-          | false -> loop (t + 1) updated_buffer keys
+          | false -> loop (t + 1) updated_buffer keys now
         )
-      ) in loop 0 initial_buffer KeyCodeSet.empty;
+      ) in loop 0 initial_buffer KeyCodeSet.empty Int32.zero;
+
 
       Sdl.destroy_texture texture;
       Sdl.destroy_renderer r;
