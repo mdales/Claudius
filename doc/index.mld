@@ -69,7 +69,7 @@ generate_model_points ()
 |> Framebuffer.render fb
 ]}
 
-You can see an example of this in practice in {:https://github.com/mdales/claudius-examples/day1/bin/main.ml}cladius-examples/day1}.
+You can see an example of this in practice in {{:https://github.com/mdales/claudius-examples/day1/bin/main.ml}cladius-examples/day1}.
 
 {3 Imperative}
 
