@@ -4,6 +4,11 @@ lets you load and manipulate palettes. *)
 type t
 
 exception String_not_multiple_of_chunk_size
+(** Raised by load_tic80_palette if the string lacks an approproate number of hex digits. *)
+
+exception ZeroEntryPalette
+(** Raised by constructor methods if the palette to be created would hae zero entries. *)
+
 
 
 (** {1 Initializations} *)
@@ -30,5 +35,5 @@ val of_list: int list -> t
 val size: t -> int
 (** [size palette] Returns the number of entries in the palette. *)
 
-val index_to_rgb: t -> int -> int32 option
-(** [index_to_rgb palette index] Will return the 24bpp RGB prepesentation of a [palette] entry at position [index] if found, otherwise None. *)
+val index_to_rgb: t -> int -> int32
+(** [index_to_rgb palette index] Will return the 24bpp RGB prepesentation of a [palette] entry at position [index]. As per other fantasy console systems, the index value will be wrapped if it is above or below the palette size. *)

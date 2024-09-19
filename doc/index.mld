@@ -125,9 +125,11 @@ let = p Palette.generate_plasma_palette 14
 |> Palette.of_list
 ]}
 
+Aside: because you can't change the palette once Claudius has started, this may feel very restrictive compared to TIC-80 and other fantasy console systems, and you'd be correct. However, because a palette in Claudius allows for more than just 16 colours, you can take a functional approach and compose a palette that is the super set of the various palettes you will need and then use offsets when rendering to access the approapriate "bank" of colours.
+
 {2 Screens}
 
-Once you have a colour palette defined, you can now create the screen mode you want:
+Once you have a colour palette defined, you can now create the screen mode you want to use for this program's lifetime:
 
 {[
 let s = Screen.create 640 480 1 (Palette.generate_mono_palette 16)
@@ -137,4 +139,37 @@ The first two arguments are the width and height of the emulated screen mode, an
 
 {[
 let s = Screen.create 320 200 3 (Palette.generate_plasma_palette 256)
+]}
+
+Claudius will use this information to generate the initial framebuffer state if you don't provide a boot function, and it is used to generate and render the window Claudius will display on the screen.
+
+{1 Details}
+
+{1 Pulling this together}
+
+{2 Pixel Functional example}
+
+Here is a simple example of a pixel functional effect, that draws a plasma effect on the screen.
+
+{[
+open Claudius
+
+let tick t s _p _i =
+  let palsize = Palette.size (Screen.palette s) in
+
+  Framebuffer.init (Screen.dimensions s) (fun x y ->
+      let ft = (Float.of_int t) /. 10.
+      and fx = (Float.of_int x) /. 140.
+      and fy = (Float.of_int y) /. 140. in
+      let z = 10. +. (sin (ft /. 1000.) *. 5.)
+      and d = 10. +. (cos (ft /. 1000.) *. 5.) in
+      let fc = (sin (sin ((fx +. ft) /. z)) +. sin (sin ((fy +. ft) /. d))) *. Float.of_int(palsize / 2) in
+      let rc = ((int_of_float fc)) mod palsize in
+      if rc >= 0 then rc else (rc + palsize)
+  )
+
+let () =
+  Palette.generate_plasma_palette 1024
+  |> Screen.create 640 480 1
+  |> Base.run "Plasma effect" None tick
 ]}

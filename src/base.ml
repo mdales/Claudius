@@ -24,9 +24,7 @@ let framebuffer_to_bigarray (s : Screen.t) (buffer : Framebuffer.t) (bitmap : bi
   let palette = Screen.palette s in
   Array.iteri (fun y row ->
     Array.iteri (fun x pixel ->
-      match (Palette.index_to_rgb palette pixel) with
-      | Some col -> bitmap.{x + (y * (Array.length row))} <- col
-      | None -> ()
+      bitmap.{x + (y * (Array.length row))} <- Palette.index_to_rgb palette pixel
     ) row
   ) (Framebuffer.to_array buffer)
 
