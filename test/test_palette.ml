@@ -46,6 +46,21 @@ let test_create_empty_mono _ =
   assert_raises Palette.ZeroEntryPalette (fun _ -> Palette.generate_mono_palette 0);
   assert_raises Palette.ZeroEntryPalette (fun _ -> Palette.generate_mono_palette (-1))
 
+let test_load_tic80_palette _ =
+  let cols = [0x000000 ; 0xFF0000 ; 0x00FF00 ; 0x0000FF ; 0xFFFFFF] in
+  let pal = Palette.load_tic80_palette "000:000000FF000000FF000000FFFFFFFF" in
+  assert_equal ~msg:"Palette size" (List.length cols) (Palette.size pal);
+  List.iteri (fun i c ->
+    let v = Palette.index_to_rgb pal i in
+    assert_equal ~msg:"Colour match" (Int32.of_int c) v
+  ) cols
+
+let test_fail_with_invalid_palette_byte_count _ =
+  assert_raises Palette.String_not_multiple_of_chunk_size (fun _ -> Palette.load_tic80_palette "000:000000FF000000FF000000FFFFFFF")
+
+let test_fail_load_empty_tic80_palette _ =
+  assert_raises Palette.ZeroEntryPalette (fun _ -> Palette.load_tic80_palette "000:")
+
 let suite =
   "PaletteTests" >::: [
     "Test simple palette set up" >:: test_basic_palette_of_ints ;
@@ -54,6 +69,9 @@ let suite =
     "Test fail to make empty palette" >:: test_create_empty_palette_from_list ;
     "Test fail to make zero entry plasma palette" >:: test_create_empty_plasma ;
     "Test fail to make zero entry mono palette" >:: test_create_empty_mono ;
+    "Test load tic80 palette string" >:: test_load_tic80_palette ;
+    "Test fail invalid tic80 palette" >:: test_fail_with_invalid_palette_byte_count ;
+    "Test fail empty tic80 palette" >:: test_fail_load_empty_tic80_palette ;
   ]
 
 let () =
