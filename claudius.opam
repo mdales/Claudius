@@ -12,6 +12,8 @@ bug-reports: "https://github.com/mdales/claudius/issues"
 depends: [
   "ocaml"
   "dune" {>= "3.12"}
+  "tsdl"
+  "ounit2"
   "odoc" {with-doc}
 ]
 build: [

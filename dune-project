@@ -19,7 +19,7 @@
  (name claudius)
  (synopsis "A retro computer library.")
  (description "A longer description")
- (depends ocaml dune)
+ (depends ocaml dune tsdl ounit2)
  (tags
   (graphics rendering paletted)))
 
