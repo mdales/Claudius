@@ -10,6 +10,8 @@ let to_array (buffer : t) : int array array =
 
 let init (dimensions : int * int) (f : int -> int -> int) : t =
   let width, height = dimensions in
+  if width <= 0 then raise (Invalid_argument "Invalid width");
+  if height <= 0 then raise (Invalid_argument "Invalid height");
   Array.init height (fun y ->
     Array.init width (fun x ->
         f x y
