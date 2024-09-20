@@ -478,15 +478,21 @@ let render (buffer : t) (draw : Primitives.t list) =
 (* ----- *)
 
 let merge (f : int -> int -> int) (origin : t) (delta : t) : t =
-  Array.map2 (fun o_row d_row ->
-    Array.map2 (fun o_pixel d_pixel ->
-      f o_pixel d_pixel
-    ) o_row d_row
-  ) origin delta
+  try
+    Array.map2 (fun o_row d_row ->
+      Array.map2 (fun o_pixel d_pixel ->
+        f o_pixel d_pixel
+      ) o_row d_row
+    ) origin delta
+  with
+  | Invalid_argument _ -> raise (Invalid_argument "Merging framebuffers requires both to have same dimensions")
 
 let merge_inplace (f : int -> int -> int) (origin : t) (delta : t) =
-  Array.iter2 (fun o_row d_row ->
-    Array.iteri (fun index d_pixel ->
-      o_row.(index) <- f o_row.(index) d_pixel
-    ) d_row
-  ) origin delta
+  try
+    Array.iter2 (fun o_row d_row ->
+      Array.iteri (fun index d_pixel ->
+        o_row.(index) <- f o_row.(index) d_pixel
+      ) d_row
+    ) origin delta
+  with
+  | Invalid_argument _ -> raise (Invalid_argument "Merging framebuffers requires both to have same dimensions")
