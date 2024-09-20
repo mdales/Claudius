@@ -1,10 +1,8 @@
 type t = int32 array
 
-exception String_not_multiple_of_chunk_size
-exception ZeroEntryPalette
 
 let generate_mono_palette (size : int) : t =
-  if size <= 0 then raise ZeroEntryPalette;
+  if size <= 0 then raise (Invalid_argument "Palette size must not be zero or negative");
   Array.init size (fun (index : int): int32 ->
     let fi = float_of_int index and fsize = float_of_int size in
     let ch = ((fi /. fsize) *. 255.0) in
@@ -12,7 +10,7 @@ let generate_mono_palette (size : int) : t =
   )
 
 let generate_plasma_palette (size : int) : t =
-  if size <= 0 then raise ZeroEntryPalette;
+  if size <= 0 then raise (Invalid_argument "Palette size must not be zero or negative");
   Array.init size (fun (index : int): int32 ->
     let fi = float_of_int index and fsize = float_of_int size in
     let fred = (cos (fi *. ((2.0 *. Float.pi) /. fsize)) *. 127.0) +. 128.0 in
@@ -30,7 +28,7 @@ let string_to_chunks (x : string) (size : int) : string list =
     else if length_left == 0 then
       sofar
     else
-      raise String_not_multiple_of_chunk_size
+      raise (Invalid_argument "String size not a multiple of 6 chars per colour")
   in
   List.rev (loop [] x)
 
@@ -43,7 +41,7 @@ let load_tic80_palette (raw : string) : t =
   if List.length strchunks > 0 then
     chunks_to_colors strchunks
   else
-    raise ZeroEntryPalette
+    raise (Invalid_argument "Palette size must not be zero or negative")
 
 let size (palette : t) : int =
     Array.length palette
@@ -60,4 +58,4 @@ let of_list (rgb_list : int list) : t =
   if List.length rgb_list > 0 then
     Array.of_list (List.map Int32.of_int rgb_list)
   else
-    raise ZeroEntryPalette
+    raise (Invalid_argument "Palette size must not be zero or negative")

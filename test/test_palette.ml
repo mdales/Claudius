@@ -36,15 +36,15 @@ let test_mono_palette_creation _ =
   ) (Palette.to_list pal)
 
 let test_create_empty_palette_from_list _ =
-  assert_raises Palette.ZeroEntryPalette (fun _ -> Palette.of_list [])
+  assert_raises (Invalid_argument "Palette size must not be zero or negative") (fun _ -> Palette.of_list [])
 
 let test_create_empty_plasma _ =
-  assert_raises Palette.ZeroEntryPalette (fun _ -> Palette.generate_plasma_palette 0);
-  assert_raises Palette.ZeroEntryPalette (fun _ -> Palette.generate_plasma_palette (-1))
+  assert_raises (Invalid_argument "Palette size must not be zero or negative") (fun _ -> Palette.generate_plasma_palette 0);
+  assert_raises (Invalid_argument "Palette size must not be zero or negative") (fun _ -> Palette.generate_plasma_palette (-1))
 
 let test_create_empty_mono _ =
-  assert_raises Palette.ZeroEntryPalette (fun _ -> Palette.generate_mono_palette 0);
-  assert_raises Palette.ZeroEntryPalette (fun _ -> Palette.generate_mono_palette (-1))
+  assert_raises (Invalid_argument "Palette size must not be zero or negative") (fun _ -> Palette.generate_mono_palette 0);
+  assert_raises (Invalid_argument "Palette size must not be zero or negative") (fun _ -> Palette.generate_mono_palette (-1))
 
 let test_load_tic80_palette _ =
   let cols = [0x000000 ; 0xFF0000 ; 0x00FF00 ; 0x0000FF ; 0xFFFFFF] in
@@ -56,10 +56,10 @@ let test_load_tic80_palette _ =
   ) cols
 
 let test_fail_with_invalid_palette_byte_count _ =
-  assert_raises Palette.String_not_multiple_of_chunk_size (fun _ -> Palette.load_tic80_palette "000:000000FF000000FF000000FFFFFFF")
+  assert_raises (Invalid_argument "String size not a multiple of 6 chars per colour") (fun _ -> Palette.load_tic80_palette "000:000000FF000000FF000000FFFFFFF")
 
 let test_fail_load_empty_tic80_palette _ =
-  assert_raises Palette.ZeroEntryPalette (fun _ -> Palette.load_tic80_palette "000:")
+  assert_raises (Invalid_argument "Palette size must not be zero or negative") (fun _ -> Palette.load_tic80_palette "000:")
 
 let suite =
   "PaletteTests" >::: [

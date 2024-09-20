@@ -3,24 +3,19 @@ lets you load and manipulate palettes. *)
 
 type t
 
-exception String_not_multiple_of_chunk_size
-(** Raised by load_tic80_palette if the string lacks an approproate number of hex digits. *)
-
-exception ZeroEntryPalette
-(** Raised by constructor methods if the palette to be created would hae zero entries. *)
-
-
-
 (** {1 Initializations} *)
 
 val generate_mono_palette: int -> t
-(** [generate_mono_palette size] Will generate a grayscale palette going from black to white with [size] number of entries. *)
+(** [generate_mono_palette size] Will generate a grayscale palette going from black to white with [size] number of entries. Raises
+    [Invalid_argument] if palette size is zero or less. *)
 
 val generate_plasma_palette: int -> t
-(** [generate_plasma_palette size] Will generate a plasma colour palette with [size] number of entries. *)
+(** [generate_plasma_palette size] Will generate a plasma colour palette with [size] number of entries. Raises
+    [Invalid_argument] if palette size is zero or less. *)
 
 val load_tic80_palette: string -> t
-(** [load_tic80_palette str] Will take a string [str] of the form found in TIC80 save files and load it as a palette. *)
+(** [load_tic80_palette str] Will take a string [str] of the form found in TIC80 save files and load it as a palette.Raises
+    [Invalid_argument] if palette size is zero or less, or if the data string is not correct. *)
 
 (** {1 Conversion} *)
 
@@ -28,7 +23,8 @@ val to_list: t -> int list
 (** [to_list palette] Converts the provided [palette] to a list of 24bpp RGB entries. *)
 
 val of_list: int list -> t
-(** [of_list list] Converts the provided [list] of 24bpp RGB entries to a palette. *)
+(** [of_list list] Converts the provided [list] of 24bpp RGB entries to a palette. Raises
+    [Invalid_argument] if list size is zero. *)
 
 (** {1 Access} *)
 
