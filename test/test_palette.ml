@@ -61,6 +61,21 @@ let test_fail_with_invalid_palette_byte_count _ =
 let test_fail_load_empty_tic80_palette _ =
   assert_raises (Invalid_argument "Palette size must not be zero or negative") (fun _ -> Palette.load_tic80_palette "000:")
 
+let test_palette_wrap_around _ =
+  let cols = [0x000000 ; 0xFF0000 ; 0x00FF00 ; 0x0000FF ; 0xFFFFFF] in
+  let pal = Palette.of_list cols in
+  for idx = -5 to -1 do
+    let v = Palette.index_to_rgb pal idx in
+    let c = List.nth cols (idx + 5) in
+    assert_equal ~msg:"Colour match" (Int32.of_int c) v
+  done;
+  for idx = 5 to 9 do
+    let v = Palette.index_to_rgb pal idx in
+    let c = List.nth cols (idx - 5) in
+    assert_equal ~msg:"Colour match" (Int32.of_int c) v
+  done
+
+
 let suite =
   "PaletteTests" >::: [
     "Test simple palette set up" >:: test_basic_palette_of_ints ;
@@ -72,6 +87,7 @@ let suite =
     "Test load tic80 palette string" >:: test_load_tic80_palette ;
     "Test fail invalid tic80 palette" >:: test_fail_with_invalid_palette_byte_count ;
     "Test fail empty tic80 palette" >:: test_fail_load_empty_tic80_palette ;
+    "Test palette wrap around" >:: test_palette_wrap_around ;
   ]
 
 let () =
