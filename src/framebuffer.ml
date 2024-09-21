@@ -436,22 +436,22 @@ let draw_string (x : int) (y : int) (f : Font.t) (s : string) (col : int) (buffe
 
 (* ----- *)
 
-let shader (f: shader_func) (buffer : t) : t =
+let map (f: shader_func) (buffer : t) : t =
   Array.map (fun row ->
     Array.map f row
   ) buffer
 
-let shaderi (f: shaderi_func) (buffer : t) : t =
+let mapi (f: shaderi_func) (buffer : t) : t =
   Array.mapi (fun y row ->
     Array.mapi (fun x _p -> f x y buffer) row
   ) buffer
 
-let shader_inplace (f: shader_func) (buffer : t) =
+let map_inplace (f: shader_func) (buffer : t) =
   Array.iter (fun row ->
     Array.map_inplace f row
   ) buffer
 
-let shaderi_inplace (f: shaderi_func) (buffer : t) =
+let mapi_inplace (f: shaderi_func) (buffer : t) =
   Array.iteri (fun y row ->
     Array.mapi_inplace (fun x _p -> f x y buffer) row
   ) buffer
@@ -477,7 +477,7 @@ let render (buffer : t) (draw : Primitives.t list) =
 
 (* ----- *)
 
-let merge (f : int -> int -> int) (origin : t) (delta : t) : t =
+let map2 (f : int -> int -> int) (origin : t) (delta : t) : t =
   try
     Array.map2 (fun o_row d_row ->
       Array.map2 (fun o_pixel d_pixel ->
@@ -487,7 +487,7 @@ let merge (f : int -> int -> int) (origin : t) (delta : t) : t =
   with
   | Invalid_argument _ -> raise (Invalid_argument "Merging framebuffers requires both to have same dimensions")
 
-let merge_inplace (f : int -> int -> int) (origin : t) (delta : t) =
+let map2_inplace (f : int -> int -> int) (origin : t) (delta : t) =
   try
     Array.iter2 (fun o_row d_row ->
       Array.iteri (fun index d_pixel ->

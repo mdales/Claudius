@@ -56,7 +56,7 @@ let test_framebuffer_write_pixel_outside _ =
 
 let test_basic_framebuffer_shader _ =
   let fb = Framebuffer.init (10, 20) (fun x y -> x + (y * 10)) in
-  let updated = Framebuffer.shader (fun x -> x + 1) fb in
+  let updated = Framebuffer.map (fun x -> x + 1) fb in
   let raw = Framebuffer.to_array updated in
   assert_equal ~msg:"Y axis size" 20 (Array.length raw);
   Array.iteri (fun y row ->
@@ -76,7 +76,7 @@ let test_basic_framebuffer_shader _ =
 
 let test_basic_framebuffer_shader_inplace _ =
   let fb = Framebuffer.init (10, 20) (fun x y -> x + (y * 10)) in
-  Framebuffer.shader_inplace (fun x -> x + 1) fb;
+  Framebuffer.map_inplace (fun x -> x + 1) fb;
   let raw = Framebuffer.to_array fb in
   assert_equal ~msg:"Y axis size" 20 (Array.length raw);
   Array.iteri (fun y row ->
@@ -94,7 +94,7 @@ let test_basic_framebuffer_shader_inplace _ =
 
 let test_basic_framebuffer_shaderi _ =
   let fb = Framebuffer.init (10, 20) (fun _ _ -> 0) in
-  let updated = Framebuffer.shaderi (fun x y _ -> (x + (y * 10))) fb in
+  let updated = Framebuffer.mapi (fun x y _ -> (x + (y * 10))) fb in
   let raw = Framebuffer.to_array updated in
   assert_equal ~msg:"Y axis size" 20 (Array.length raw);
   Array.iteri (fun y row ->
@@ -114,7 +114,7 @@ let test_basic_framebuffer_shaderi _ =
 
 let test_basic_framebuffer_shaderi_inplace _ =
   let fb = Framebuffer.init (10, 20) (fun _ _ -> 0) in
-  Framebuffer.shaderi_inplace (fun x y _ -> (x + (y * 10))) fb;
+  Framebuffer.mapi_inplace (fun x y _ -> (x + (y * 10))) fb;
   let raw = Framebuffer.to_array fb in
   assert_equal ~msg:"Y axis size" 20 (Array.length raw);
   Array.iteri (fun y row ->
@@ -133,7 +133,7 @@ let test_basic_framebuffer_shaderi_inplace _ =
 let test_merge_framebuffers _ =
   let fb1 = Framebuffer.init (10, 20) (fun x y -> (x + y) mod 2)
   and fb2 = Framebuffer.init (10, 20) (fun x y -> 1 - ((x + y) mod 2)) in
-  let merged = Framebuffer.merge (fun a b -> a + b) fb1 fb2 in
+  let merged = Framebuffer.map2 (fun a b -> a + b) fb1 fb2 in
   let raw = Framebuffer.to_array merged in
   assert_equal ~msg:"Y axis size" 20 (Array.length raw);
   Array.iter (fun row ->
@@ -146,7 +146,7 @@ let test_merge_framebuffers _ =
 let test_merge_framebuffers_inplace _ =
   let fb1 = Framebuffer.init (10, 20) (fun x y -> (x + y) mod 2)
   and fb2 = Framebuffer.init (10, 20) (fun x y -> 1 - ((x + y) mod 2)) in
-  Framebuffer.merge_inplace (fun a b -> a + b) fb1 fb2;
+  Framebuffer.map2_inplace (fun a b -> a + b) fb1 fb2;
   let raw = Framebuffer.to_array fb1 in
   assert_equal ~msg:"Y axis size" 20 (Array.length raw);
   Array.iter (fun row ->
@@ -159,12 +159,12 @@ let test_merge_framebuffers_inplace _ =
 let test_merge_mismatched_framebuffers _ =
   let fb1 = Framebuffer.init (10, 20) (fun x y -> (x + y) mod 2)
   and fb2 = Framebuffer.init (20, 10) (fun x y -> 1 - ((x + y) mod 2)) in
-  assert_raises (Invalid_argument "Merging framebuffers requires both to have same dimensions") (fun _ -> Framebuffer.merge (fun a b -> a + b) fb1 fb2)
+  assert_raises (Invalid_argument "Merging framebuffers requires both to have same dimensions") (fun _ -> Framebuffer.map2 (fun a b -> a + b) fb1 fb2)
 
 let test_merge_mismatched_framebuffers_inplace _ =
   let fb1 = Framebuffer.init (10, 20) (fun x y -> (x + y) mod 2)
   and fb2 = Framebuffer.init (20, 10) (fun x y -> 1 - ((x + y) mod 2)) in
-  assert_raises (Invalid_argument "Merging framebuffers requires both to have same dimensions") (fun _ -> Framebuffer.merge_inplace (fun a b -> a + b) fb1 fb2)
+  assert_raises (Invalid_argument "Merging framebuffers requires both to have same dimensions") (fun _ -> Framebuffer.map2_inplace (fun a b -> a + b) fb1 fb2)
 
 let suite =
   "Frambuffer tests" >::: [

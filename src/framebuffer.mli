@@ -101,34 +101,37 @@ val draw_string: int -> int -> Font.t -> string -> int -> t -> int
   {[
   Framebuffer.map_inplace (fun x -> match pixel with 0 -> 0 | x -> x - 1) existing_framebuffer;
   ]}
+
+  All of these functions have a inplace and non_implace version: the non-implace version makes for more functional code, but
+  if you do it a lot the memory allocations will slow things down, and in which case you may wish to consider using inplace versions.
 *)
 
 type shader_func = int -> int
 
 type shaderi_func = int -> int -> t -> int
 
-val shader: shader_func -> t -> t
-(** [shader f framebuffer] Generates a new framebuffer of the same dimensions by applying the provided
+val map: shader_func -> t -> t
+(** [map f framebuffer] Generates a new framebuffer of the same dimensions by applying the provided
     function [f] to each pixel value in the original to generate a new pixel in the target. *)
 
-val shaderi: shaderi_func -> t -> t
-(** [shader f framebuffer] Generates a new framebuffer of the same dimensions by applying the provided
+val mapi: shaderi_func -> t -> t
+(** [mapi f framebuffer] Generates a new framebuffer of the same dimensions by applying the provided
     function [f] to each pixel value and its coordinates in the original to generate a new pixel in the target. *)
 
-val shader_inplace: shader_func -> t -> unit
-(** [shader f framebuffer] Updates a framebuffer by applying the provided
+val map_inplace: shader_func -> t -> unit
+(** [map_inplace f framebuffer] Updates a framebuffer by applying the provided
     function [f] to each pixel value to update its value. *)
 
-val shaderi_inplace: shaderi_func -> t -> unit
-(** [shader f framebuffer] Updates a framebuffer by applying the provided
+val mapi_inplace: shaderi_func -> t -> unit
+(** [mapi_inplace f framebuffer] Updates a framebuffer by applying the provided
     function [f] to each pixel value and its coordinate value to update its value. *)
 
-val merge: (int -> int -> int) -> t -> t -> t
-(** [merge f first second] Takes two framebuffers of equal size and applys the function [f] to each pixel
+val map2: (int -> int -> int) -> t -> t -> t
+(** [map2 f first second] Takes two framebuffers of equal size and applys the function [f] to each pixel
     pair in turn to generate a new framebuffer. *)
 
-val merge_inplace: (int -> int -> int) -> t -> t -> unit
-(** [merge_inplase f first second] Takes two framebuffers of equal size and applys the function [f] to each pixel
+val map2_inplace: (int -> int -> int) -> t -> t -> unit
+(** [map2_inplace f first second] Takes two framebuffers of equal size and applys the function [f] to each pixel
     pair in storing the result back in the first provided framebuffer. *)
 
 
