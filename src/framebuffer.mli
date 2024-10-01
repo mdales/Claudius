@@ -107,8 +107,11 @@ val draw_string: int -> int -> Font.t -> string -> int -> t -> int
 *)
 
 type shader_func = int -> int
+(** You pass [shader_func value] to the map functions, which call it passing in a single pixel value from which to derive a new pixel value. *)
 
 type shaderi_func = int -> int -> t -> int
+(** You pass [shaderi_func] to the mapi functions, which passes in both the current x y coordinates and the existing framebuffer from which you
+can then extract values for generating the updated value. *)
 
 val map: shader_func -> t -> t
 (** [map f framebuffer] Generates a new framebuffer of the same dimensions by applying the provided

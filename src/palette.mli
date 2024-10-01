@@ -1,5 +1,7 @@
 (** Claudius works with colour palettes, as per computers of old. This module
-lets you load and manipulate palettes. *)
+lets you load and manipulate palettes. The palettes can be thought of simply
+as indexed arrays of RGB values, and you write index values to the Framebuffer
+rather than RGB values directly. *)
 
 type t
 
@@ -26,7 +28,7 @@ val of_list: int list -> t
 (** [of_list list] Converts the provided [list] of 24bpp RGB entries to a palette. Raises
     [Invalid_argument] if list size is zero. *)
 
-(** {1 Access} *)
+(** {1 Usage} *)
 
 val size: t -> int
 (** [size palette] Returns the number of entries in the palette. *)
