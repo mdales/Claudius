@@ -236,12 +236,6 @@ let filled_triangle (x0 : int) (y0 : int) (x1 : int) (y1 : int) (x2 : int) (y2 :
     )
   ) spans
 
-let rot l =
-  match l with
-  | [] -> []
-  | x :: [] -> [x]
-  | x :: tl -> List.rev (x :: (List.rev tl))
-
 type strand = ((int * int) * (int * int)) list
 
 let strand_direction (s : strand) : int =
@@ -259,10 +253,15 @@ let strand_direction (s : strand) : int =
 
 let poly_to_strands (points : (int * int) list) : strand list =
   match points with
-  | [] -> []
-  | points -> (
+  | [] | [_] -> []
+  | p1 :: p2 :: ptl -> (
 
-    let lines = List.combine points (rot points) in
+    let rec point_list_to_lines p1 p2 pl acc =
+      match pl with
+      | [] -> (p1, p2) :: acc
+      | np :: tl -> point_list_to_lines p2 np tl ((p1, p2) :: acc)
+    in
+    let lines = point_list_to_lines p1 p2 ptl [] in
 
     let rec loop
         (last_direction : int)
@@ -332,9 +331,8 @@ let interpolate_strand (strand : ((int * int) * (int * int)) list) : (int * span
   )
 
 let filled_polygon (points : (int * int) list) (col : int) (buffer : t) =
-  match (List.length points) with
-  | 0 -> ()
-  | 1 -> ()
+  match points with
+  | [] | [_] -> ()
   | _ -> (
     let sorted_points = List.sort (fun a b ->
       let _, ay = a and _, by = b in
@@ -448,12 +446,14 @@ let mapi (f: shaderi_func) (buffer : t) : t =
 
 let map_inplace (f: shader_func) (buffer : t) =
   Array.iter (fun row ->
-    Array.map_inplace f row
+    Array.iteri (fun i v -> row.(i) <- f v) row
+    (* Array.map_inplace f row*)
   ) buffer
 
 let mapi_inplace (f: shaderi_func) (buffer : t) =
   Array.iteri (fun y row ->
-    Array.mapi_inplace (fun x _p -> f x y buffer) row
+    Array.iteri (fun x _v -> row.(x) <- f x y buffer) row
+    (* Array.mapi_inplace (fun x _p -> f x y buffer) row*)
   ) buffer
 
 (* ---- *)
